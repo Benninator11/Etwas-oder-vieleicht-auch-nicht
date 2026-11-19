@@ -1,312 +1,60 @@
 <!doctype html>
 <html lang="de">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="theme-color" content="#101827">
-    <meta name="description" content="Willkommen auf meiner kleinen Website im Internet.">
-    <title>Willkommen — Meine Website</title>
-    <style>
-      :root {
-        color-scheme: dark;
-        --background: #101827;
-        --surface: rgba(255, 255, 255, 0.06);
-        --text: #f4f7fb;
-        --muted: #b7c1d1;
-        --accent: #9ef0d0;
-        --accent-dark: #143b36;
-      }
-
-      * { box-sizing: border-box; }
-      html { scroll-behavior: smooth; }
-      body {
-        min-height: 100vh;
-        margin: 0;
-        color: var(--text);
-        background:
-          radial-gradient(ellipse at 75% 15%, rgba(87, 130, 190, 0.2), transparent 38rem),
-          radial-gradient(ellipse at 10% 85%, rgba(75, 171, 142, 0.12), transparent 34rem),
-          var(--background);
-        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-        line-height: 1.6;
-      }
-
-      a { color: inherit; }
-      .page { width: min(1080px, calc(100% - 2.5rem)); margin: 0 auto; }
-      header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 1.5rem 0;
-      }
-      .brand { font-weight: 750; letter-spacing: 0.02em; text-decoration: none; }
-      nav { display: flex; gap: 1.5rem; }
-      nav a { color: var(--muted); font-size: 0.95rem; text-decoration: none; }
-      nav a:hover, nav a:focus-visible { color: var(--accent); }
-
-      main { padding: clamp(4rem, 11vw, 8.5rem) 0 5rem; }
-      .eyebrow {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.55rem;
-        color: var(--accent);
-        font-size: 0.82rem;
-        font-weight: 700;
-        letter-spacing: 0.13em;
-        text-transform: uppercase;
-      }
-      .eyebrow::before { width: 1.5rem; height: 1px; background: currentColor; content: ""; }
-      h1 {
-        max-width: 780px;
-        margin: 1.25rem 0;
-        font-size: clamp(3rem, 9vw, 6.5rem);
-        letter-spacing: -0.07em;
-        line-height: 0.98;
-      }
-      h1 span { color: var(--accent); }
-      .intro { max-width: 590px; margin: 1.5rem 0 2rem; color: var(--muted); font-size: clamp(1.05rem, 2vw, 1.25rem); }
-      .actions { display: flex; flex-wrap: wrap; gap: 0.85rem; }
-      .button {
-        display: inline-flex;
-        min-height: 3rem;
-        align-items: center;
-        justify-content: center;
-        padding: 0.7rem 1.15rem;
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        border-radius: 999px;
-        font-weight: 700;
-        text-decoration: none;
-        transition: transform 160ms ease, background 160ms ease;
-      }
-      .button:hover { transform: translateY(-2px); }
-      .button-primary { border-color: var(--accent); color: #10211d; background: var(--accent); }
-      .button-secondary:hover { background: var(--surface); }
-
-      .about {
-        display: grid;
-        grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
-        gap: 2rem;
-        align-items: start;
-        margin-top: clamp(5rem, 12vw, 9rem);
-        padding: 2rem;
-        border: 1px solid rgba(255, 255, 255, 0.11);
-        border-radius: 1.5rem;
-        background: var(--surface);
-        backdrop-filter: blur(12px);
-      }
-      h2 { margin: 0; font-size: clamp(1.6rem, 4vw, 2.4rem); letter-spacing: -0.04em; }
-      .about p { margin: 0; color: var(--muted); }
-      .game {
-        margin-top: 2rem;
-        padding: 2rem;
-        border: 1px solid rgba(255, 255, 255, 0.11);
-        border-radius: 1.5rem;
-        background: var(--surface);
-      }
-      .game h2 { margin-bottom: 0.5rem; }
-      .game p { color: var(--muted); }
-      .game-board {
-        display: grid;
-        width: min(100%, 19rem);
-        grid-template-columns: repeat(3, 1fr);
-        gap: 0.6rem;
-        margin: 1.25rem 0;
-      }
-      .game-cell {
-        display: grid;
-        aspect-ratio: 1;
-        place-items: center;
-        border: 1px solid rgba(255, 255, 255, 0.18);
-        border-radius: 0.9rem;
-        color: var(--accent);
-        background: rgba(0, 0, 0, 0.2);
-        font: inherit;
-        font-size: clamp(2rem, 10vw, 3.25rem);
-        font-weight: 750;
-        cursor: pointer;
-      }
-      .game-cell:hover:enabled { background: rgba(158, 240, 208, 0.12); }
-      .game-cell:disabled { cursor: default; }
-      .game-reset {
-        min-height: 3rem;
-        padding: 0.65rem 1rem;
-        border: 1px solid var(--accent);
-        border-radius: 999px;
-        color: #10211d;
-        background: var(--accent);
-        font: inherit;
-        font-weight: 700;
-        cursor: pointer;
-      }
-      .game-reset:hover { filter: brightness(1.08); }
-      #game-status { min-height: 1.6em; margin-bottom: 1rem; }
-      footer { padding: 1.5rem 0 2rem; border-top: 1px solid rgba(255, 255, 255, 0.1); color: var(--muted); font-size: 0.9rem; }
-      :focus-visible { outline: 3px solid var(--accent); outline-offset: 4px; }
-
-      @media (max-width: 620px) {
-        header { align-items: flex-start; gap: 1rem; }
-        nav { gap: 0.9rem; }
-        nav a { font-size: 0.85rem; }
-        .about { grid-template-columns: 1fr; padding: 1.5rem; }
-        .game { padding: 1.5rem; }
-      }
-      @media (prefers-reduced-motion: reduce) {
-        *, *::before, *::after { scroll-behavior: auto !important; transition-duration: 0.01ms !important; }
-      }
-    </style>
-  </head>
-  <body>
-    <div class="page">
-      <header>
-        <a class="brand" href="#start" aria-label="Zur Startseite">Meine Website</a>
-        <nav aria-label="Hauptnavigation">
-          <a href="#start">Start</a>
-          <a href="#ueber">Über</a>
-        </nav>
-      </header>
-
-      <main id="start">
-        <section aria-labelledby="welcome-title">
-          <p class="eyebrow">Schön, dass du da bist</p>
-          <h1 id="welcome-title">Willkommen auf meiner <span>Seite.</span></h1>
-          <p class="intro">Das hier ist meine kleine Ecke im Internet – ein guter Ort, um Ideen zu sammeln und Neues auszuprobieren.</p>
-          <div class="actions">
-            <a class="button button-primary" href="#ueber">Schau dich um <span aria-hidden="true">↘</span></a>
-            <a class="button button-secondary" href="#ueber">Mehr erfahren</a>
-          </div>
-        </section>
-
-        <section class="about" id="ueber" aria-labelledby="about-title">
-          <h2 id="about-title">Ein Anfang.</h2>
-          <p>Diese Website wächst Schritt für Schritt. Hier kannst du bald mehr über mich, meine Projekte oder alles finden, was ich mit dir teilen möchte. Bis dahin: Willkommen und viel Spaß beim Umschauen!</p>
-        </section>
-
-        <section class="game" aria-labelledby="game-title">
-          <h2 id="game-title">Tic-Tac-Toe</h2>
-          <p>Du spielst <strong>X</strong>, die KI spielt <strong>O</strong>. Wer schafft zuerst drei in einer Reihe?</p>
-          <div class="game-board" id="game-board" role="group" aria-label="Tic-Tac-Toe-Spielbrett">
-            <button class="game-cell" type="button" data-cell="0" aria-label="Feld 1"></button>
-            <button class="game-cell" type="button" data-cell="1" aria-label="Feld 2"></button>
-            <button class="game-cell" type="button" data-cell="2" aria-label="Feld 3"></button>
-            <button class="game-cell" type="button" data-cell="3" aria-label="Feld 4"></button>
-            <button class="game-cell" type="button" data-cell="4" aria-label="Feld 5"></button>
-            <button class="game-cell" type="button" data-cell="5" aria-label="Feld 6"></button>
-            <button class="game-cell" type="button" data-cell="6" aria-label="Feld 7"></button>
-            <button class="game-cell" type="button" data-cell="7" aria-label="Feld 8"></button>
-            <button class="game-cell" type="button" data-cell="8" aria-label="Feld 9"></button>
-          </div>
-          <p id="game-status" aria-live="polite">Du bist dran – wähle ein Feld.</p>
-          <button class="game-reset" id="new-game" type="button">Neues Spiel</button>
-        </section>
-      </main>
-
-      <footer>
-        <p>Mit Neugier gemacht · <span id="year">2026</span></p>
-      </footer>
-    </div>
-    <script>
-      document.getElementById("year").textContent = new Date().getFullYear();
-
-      const boardElement = document.getElementById("game-board");
-      const cells = Array.from(boardElement.querySelectorAll(".game-cell"));
-      const statusElement = document.getElementById("game-status");
-      const winningLines = [
-        [0, 1, 2], [3, 4, 5], [6, 7, 8],
-        [0, 3, 6], [1, 4, 7], [2, 5, 8],
-        [0, 4, 8], [2, 4, 6]
-      ];
-      let board = Array(9).fill("");
-      let gameOver = false;
-
-      function getWinner(position) {
-        for (const [a, b, c] of winningLines) {
-          if (position[a] && position[a] === position[b] && position[a] === position[c]) {
-            return position[a];
-          }
-        }
-        return null;
-      }
-
-      function renderBoard() {
-        cells.forEach((cell, index) => {
-          cell.textContent = board[index];
-          cell.setAttribute("aria-label", `Feld ${index + 1}${board[index] ? `: ${board[index]}` : ""}`);
-          cell.disabled = gameOver || board[index] !== "";
-        });
-      }
-
-      function finishIfNeeded() {
-        const winner = getWinner(board);
-        if (winner) {
-          gameOver = true;
-          statusElement.textContent = winner === "X" ? "Du hast gewonnen! 🎉" : "Die KI hat gewonnen. Versuch es noch einmal!";
-          renderBoard();
-          return true;
-        }
-        if (board.every(Boolean)) {
-          gameOver = true;
-          statusElement.textContent = "Unentschieden! Gute Runde.";
-          renderBoard();
-          return true;
-        }
-        return false;
-      }
-
-      function findWinningMove(player) {
-        for (let index = 0; index < board.length; index += 1) {
-          if (!board[index]) {
-            board[index] = player;
-            const wins = getWinner(board) === player;
-            board[index] = "";
-            if (wins) return index;
-          }
-        }
-        return null;
-      }
-
-      function chooseAiMove() {
-        // Erst gewinnen, dann den direkten Sieg des Spielers verhindern.
-        const winningMove = findWinningMove("O");
-        if (winningMove !== null) return winningMove;
-        const blockingMove = findWinningMove("X");
-        if (blockingMove !== null) return blockingMove;
-
-        // Danach Mitte, Ecken und schließlich ein beliebiges freies Feld wählen.
-        if (!board[4]) return 4;
-        const corners = [0, 2, 6, 8].filter((index) => !board[index]);
-        const choices = corners.length ? corners : board.map((mark, index) => mark ? null : index).filter((index) => index !== null);
-        return choices[Math.floor(Math.random() * choices.length)];
-      }
-
-      function makeAiMove() {
-        const move = chooseAiMove();
-        if (move === undefined) return;
-        board[move] = "O";
-        renderBoard();
-        if (!finishIfNeeded()) statusElement.textContent = "Du bist dran – wähle ein Feld.";
-      }
-
-      boardElement.addEventListener("click", (event) => {
-        const cell = event.target.closest("[data-cell]");
-        if (!cell || gameOver) return;
-        const index = Number(cell.dataset.cell);
-        if (board[index]) return;
-
-        board[index] = "X";
-        renderBoard();
-        if (finishIfNeeded()) return;
-
-        statusElement.textContent = "Die KI überlegt …";
-        makeAiMove();
-      });
-
-      document.getElementById("new-game").addEventListener("click", () => {
-        board = Array(9).fill("");
-        gameOver = false;
-        renderBoard();
-        statusElement.textContent = "Du bist dran – wähle ein Feld.";
-        cells[0].focus();
-      });
-    </script>
-  </body>
-</html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#5b341f">
+<title>Schokokasse – Die Gute Schokolade</title>
+<style>
+:root{font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#30251e;background:#faf6f0;font-size:18px}*{box-sizing:border-box}body{margin:0}button,input{font:inherit}button{cursor:pointer;touch-action:manipulation}button:focus-visible,input:focus-visible{outline:3px solid #3077c7;outline-offset:2px}.shell{max-width:960px;margin:0 auto;padding:16px 18px 48px}header{background:#5b341f;color:white;padding:18px max(18px,env(safe-area-inset-left));}header .wrap{max-width:924px;margin:auto;display:flex;align-items:center;justify-content:space-between;gap:12px}h1{font-size:clamp(1.4rem,4vw,2rem);margin:0;font-weight:800}.sub{font-size:.85rem;opacity:.9}h2{margin:0 0 12px;font-size:1.15rem}h3{margin:12px 0 6px;font-size:1rem}.panel{background:white;border:1px solid #e5d9ca;border-radius:18px;padding:18px;margin-bottom:16px;box-shadow:0 2px 7px #3c260d0b}.product-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.product{border:2px solid #d9c1a8;border-radius:16px;background:#fff8ed;min-height:108px;text-align:left;padding:14px;display:flex;flex-direction:column;justify-content:space-between;gap:8px}.product.active{background:#ffe7aa;border-color:#a06520;box-shadow:inset 0 0 0 1px #a06520}.product .name{font-size:1rem;font-weight:750}.product .price{font-weight:850;color:#714017}.quantity{display:flex;gap:9px;flex-wrap:wrap;margin-top:12px}.quantity button,.action,.num,.money{border-radius:13px;min-height:52px;padding:9px 16px;font-weight:700;border:1px solid #baa28b;background:#f5eadb;color:#392a1e}.quantity button{min-width:65px}.quantity button:disabled{opacity:.45;cursor:not-allowed}.hint{font-size:.86rem;color:#746354;margin:7px 0 0}.cart-empty{color:#79695c;padding:12px 0}.cart-row{display:flex;align-items:center;gap:8px;padding:10px 0;border-bottom:1px solid #eee3d8}.cart-name{flex:1;font-weight:600;min-width:0}.cart-qty{color:#6c5847;white-space:nowrap}.cart-price{font-weight:800;min-width:76px;text-align:right;white-space:nowrap}.remove{border:none;color:#9b3229;background:#ffebea;border-radius:9px;min-width:44px;min-height:44px;font-weight:800}.total{display:flex;justify-content:space-between;align-items:baseline;border-top:2px solid #5b341f;margin-top:12px;padding-top:12px;gap:8px}.total strong{font-size:clamp(1.7rem,5vw,2.5rem);color:#502c18;font-variant-numeric:tabular-nums}.pay-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.pay-label{font-weight:700;display:block;margin-bottom:7px}.pay-input{width:100%;font-size:1.5rem;font-weight:800;border:2px solid #bfa58a;border-radius:12px;padding:10px 12px;min-height:56px;font-variant-numeric:tabular-nums}.quick{display:flex;gap:7px;flex-wrap:wrap;margin-top:9px}.money{min-height:43px;padding:7px 12px}.change{border-radius:15px;padding:13px 16px;background:#eee7db;display:flex;flex-direction:column;justify-content:center;gap:6px}.change span{font-weight:700}.change strong{font-size:clamp(1.6rem,4vw,2.3rem);font-variant-numeric:tabular-nums}.change.good{background:#e4f6df;color:#19551d}.change.bad{background:#ffebe6;color:#96352b}.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}.action{flex:1}.primary{background:#346a32;color:white;border-color:#346a32;font-size:1.08rem;min-height:60px}.secondary{background:white}.danger{color:#a03226;background:white;border-color:#d8a7a0}.action:disabled{opacity:.46;cursor:not-allowed}.notice{min-height:22px;color:#28612c;font-weight:700;margin:9px 0 0;font-size:.88rem}.stats-head{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap}.stats-head small{color:#756556}.stat-row{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid #eee5dc}.stat-row strong{white-space:nowrap;font-variant-numeric:tabular-nums}.summary{font-weight:800}.stat-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}.stat-actions .action{font-size:.89rem;min-height:46px}.footer{font-size:.78rem;color:#786b60;text-align:center;line-height:1.5}.pill{border-radius:100px;background:#fff2d4;color:#4d301b;font-weight:750;padding:6px 10px;white-space:nowrap;font-size:.8rem}@media(min-width:760px){.columns{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start}.columns .panel{margin:0}.lower{margin-top:16px}.product-grid{grid-template-columns:1fr 1fr}}@media(max-width:450px){.shell{padding:12px 11px 35px}.panel{padding:13px}.product{padding:11px;min-height:110px}.cart-row{font-size:.88rem}.cart-price{min-width:65px}.pay-grid{grid-template-columns:1fr}.change{min-height:84px}}
+</style>
+</head>
+<body>
+<header><div class="wrap"><div><h1>🍫 Schokokasse</h1><div class="sub">Die Gute Schokolade · Pausenverkauf</div></div><span class="pill">Dienstag</span></div></header>
+<main class="shell">
+<div class="columns">
+<section class="panel" aria-labelledby="products-title"><h2 id="products-title">1 · Artikel auswählen</h2><div class="product-grid" id="products"></div><h3>2 · Menge antippen</h3><div class="quantity" id="quantity"></div><p class="hint">Für weitere Sorten einfach erneut Artikel und Menge wählen.</p></section>
+<section class="panel" aria-labelledby="cart-title"><h2 id="cart-title">3 · Einkauf & Bezahlung</h2><div id="cart" aria-live="polite"></div><div class="total"><span>Zu bezahlen</span><strong id="total">0,00 €</strong></div><div class="pay-grid" style="margin-top:16px"><div><label class="pay-label" for="paid">Erhaltenes Geld (€)</label><input class="pay-input" id="paid" type="text" inputmode="decimal" placeholder="z. B. 5,00" autocomplete="off"><div class="quick"><button type="button" class="money" data-money="exact">Passend</button><button type="button" class="money" data-money="500">5 €</button><button type="button" class="money" data-money="1000">10 €</button><button type="button" class="money" data-money="2000">20 €</button></div></div><div class="change" id="change"><span>Rückgeld</span><strong id="change-value">–</strong></div></div><div class="actions"><button type="button" class="action primary" id="finish">✓ Verkauf abschließen</button><button type="button" class="action secondary" id="clear">Einkauf löschen</button></div><p class="notice" id="notice" aria-live="polite"></p></section>
+</div>
+<section class="panel lower" aria-labelledby="stats-title"><div class="stats-head"><h2 id="stats-title">📊 Verkaufsübersicht</h2><small>Wird auf diesem iPad gespeichert</small></div><div id="stats"></div><div class="stat-actions"><button class="action secondary" type="button" id="export">⬇ CSV exportieren</button><button class="action secondary" type="button" id="undo">↶ Letzten Verkauf rückgängig</button><button class="action danger" type="button" id="reset">Tagesstatistik zurücksetzen</button></div><p class="hint">Wichtig: Die Statistik zählt nur abgeschlossene Verkäufe. Bei mehreren iPads werden die Verkäufe getrennt erfasst und nicht automatisch zusammengerechnet.</p></section>
+<p class="footer">Funktioniert auch ohne Internet, sobald die Datei auf dem iPad verfügbar ist. Die Verkaufszahlen bleiben normalerweise auf diesem Gerät gespeichert. Für eine zuverlässige Sicherung regelmäßig CSV exportieren.</p>
+</main>
+<script>
+(() => {
+'use strict';
+const ITEMS=[{id:'vollmilch',name:'Vollmilch-Schokolade',cents:140},{id:'zartbitter',name:'Zartbitter-Schokolade',cents:170},{id:'bio',name:'Vollmilch-Bio-Schokolade',cents:170},{id:'riegel',name:'Der gute Riegel',cents:80}];
+const STORAGE='schokokasse_sales_v1';
+const $=id=>document.getElementById(id);
+const money=cents=>(cents/100).toLocaleString('de-DE',{style:'currency',currency:'EUR'});
+let selected=ITEMS[0].id;
+let cart={};
+let sales=[];
+let sessionOnly=false;
+try{const raw=localStorage.getItem(STORAGE); if(raw){const parsed=JSON.parse(raw);if(Array.isArray(parsed))sales=parsed.filter(s=>s&&s.quantities&&Number.isInteger(s.total)&&s.total>=0);}}catch(e){sessionOnly=true;}
+const persist=()=>{try{localStorage.setItem(STORAGE,JSON.stringify(sales));}catch(e){sessionOnly=true;}};
+function subtotal(){return ITEMS.reduce((sum,p)=>sum+(cart[p.id]||0)*p.cents,0);}
+function paidCents(){const raw=$('paid').value.trim().replace(/\s/g,'').replace('€','');if(!raw)return null;const normalized=raw.replace(',','.');if(!/^\d+(?:\.\d{1,2})?$/.test(normalized))return NaN;return Math.round(Number(normalized)*100);}
+function renderProducts(){$('products').innerHTML=ITEMS.map(p=>`<button type="button" class="product ${selected===p.id?'active':''}" data-id="${p.id}" aria-pressed="${selected===p.id}"><span class="name">${p.name}</span><span class="price">${money(p.cents)} / Stück</span></button>`).join('');}
+function renderQuantity(){$('quantity').innerHTML=[1,2,3,4,5,10].map(q=>`<button type="button" data-qty="${q}">× ${q}</button>`).join('');}
+function renderCart(){const rows=ITEMS.filter(p=>cart[p.id]>0).map(p=>`<div class="cart-row"><span class="cart-name">${p.name}</span><span class="cart-qty">× ${cart[p.id]}</span><strong class="cart-price">${money(cart[p.id]*p.cents)}</strong><button type="button" class="remove" data-remove="${p.id}" aria-label="Eine Einheit ${p.name} entfernen">−1</button></div>`).join('');$('cart').innerHTML=rows||'<div class="cart-empty">Noch keine Artikel ausgewählt.</div>';$('total').textContent=money(subtotal());updateChange();}
+function updateChange(){const total=subtotal(),paid=paidCents(),box=$('change');box.className='change';box.querySelector('span').textContent='Rückgeld';if(total===0){$('change-value').textContent='–';}else if(paid===null){$('change-value').textContent='Betrag eingeben';}else if(Number.isNaN(paid)){$('change-value').textContent='Eingabe prüfen';box.classList.add('bad');}else if(paid<total){$('change-value').textContent=money(total-paid);box.classList.add('bad');box.querySelector('span').textContent='Noch zu zahlen';}else{$('change-value').textContent=money(paid-total);box.classList.add('good');}if(paid===null||paid>=total||total===0){box.querySelector('span').textContent='Rückgeld';}$('finish').disabled=!(total>0&&paid!==null&&Number.isFinite(paid)&&paid>=total);}
+function renderStats(){const counts=Object.fromEntries(ITEMS.map(p=>[p.id,0]));let revenue=0;for(const sale of sales){for(const p of ITEMS){const q=sale.quantities[p.id];if(Number.isSafeInteger(q)&&q>=0)counts[p.id]+=q;}revenue+=sale.total;}
+const totalCount=Object.values(counts).reduce((a,b)=>a+b,0);
+$('stats').innerHTML=ITEMS.map(p=>`<div class="stat-row"><span>${p.name}</span><strong>${counts[p.id]} Stück</strong></div>`).join('')+`<div class="stat-row summary"><span>Insgesamt verkauft</span><strong>${totalCount} Stück</strong></div><div class="stat-row summary"><span>Umsatz</span><strong>${money(revenue)}</strong></div><div class="stat-row"><span>Abgeschlossene Einkäufe</span><strong>${sales.length}</strong></div>`;
+$('undo').disabled=sales.length===0;$('reset').disabled=sales.length===0;}
+function announce(msg){$('notice').textContent=msg;}
+function afterCartChange(){announce('');renderCart();}
+$('products').addEventListener('click',e=>{const btn=e.target.closest('button[data-id]');if(!btn)return;selected=btn.dataset.id;renderProducts();announce('');});
+$('quantity').addEventListener('click',e=>{const btn=e.target.closest('button[data-qty]');if(!btn)return;const amount=Number(btn.dataset.qty);cart[selected]=(cart[selected]||0)+amount;afterCartChange();});
+$('cart').addEventListener('click',e=>{const btn=e.target.closest('button[data-remove]');if(!btn)return;const id=btn.dataset.remove;cart[id]=Math.max(0,(cart[id]||0)-1);afterCartChange();});
+$('paid').addEventListener('input',()=>{announce('');updateChange();});
+document.querySelectorAll('[data-money]').forEach(btn=>btn.addEventListener('click',()=>{$('paid').value=btn.dataset.money==='exact'?(subtotal()/100).toFixed(2).replace('.',','):(Number(btn.dataset.money)/100).toFixed(2).replace('.',',');announce('');updateChange();}));
+$('clear').addEventListener('click',()=>{cart={};$('paid').value='';afterCartChange();});
+$('finish').addEventListener('click',()=>{const total=subtotal(),paid=paidCents();if(total===0||paid===null||!Number.isFinite(paid)||paid<total)return;sales.push({timestamp:new Date().toISOString(),quantities:{...cart},total,paid});persist();cart={};$('paid').value='';renderCart();renderStats();announce('✓ Verkauf gespeichert. Nächster Einkauf!');});
+$('undo').addEventListener('click',()=>{if(!sales.length)return;const last=sales[sales.length-1];const msg='Letzten Verkauf ('+money(last.total)+') wirklich aus der Statistik entfernen?';if(!confirm(msg))return;sales.pop();persist();renderStats();announce('Letzter Verkauf rückgängig gemacht.');});
+$('reset').addEventListener('click',()=>{if(!sales.length)return;if(!confirm('Alle bisherigen Verkaufszahlen auf diesem iPad löschen? Vorher am besten CSV exportieren.'))return;if(!confirm('Wirklich endgültig die Tagesstatistik zurücksetzen?'))return;sales=[];persist();renderStats();announce('Tagesstatistik wurde zurückgesetzt.');});
+$('export').addEventListener('click',()=>{const sep=';';const header=['Zeitpunkt',...ITEMS.map(p=>p.name),'Gesamt (EUR)','Bezahlt (EUR)','Rückgeld (EUR)'];const rows=sales.map(s=>{const cells=[new Date(s.timestamp).toLocaleString('de-DE'),...ITEMS.map(p=>s.quantities[p.id]||0),((s.total||0)/100).toFixed(2).replace('.',','),((s.paid||0)/100).toFixed(2).replace('.',','),((s.paid-s.total)/100).toFixed(2).replace('.',',')];return cells.map(x=>'"'+String(x).replaceAll('"','""')+'"').join(sep);});const csv='\ufeff'+[header.map(x=>'"'+x.replaceAll('"','""')+'"').join(sep),...rows].join('\r\n');const blob=new Blob([csv],{type:'text/csv;charset=utf-8'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='Schokokasse-Verkaeufe-'+new Date().toISOString().slice(0,10)+'.csv';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);announce('CSV-Datei erstellt.');});
+renderProducts();renderQuantity();renderCart();renderStats();if(sessionOnly)announce('Hinweis: Speichern ist in diesem Browser eventuell nicht verfügbar. Bitte CSV exportieren.');
+})();
+</script>
+</body></html>
