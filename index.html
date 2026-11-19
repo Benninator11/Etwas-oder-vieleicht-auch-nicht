@@ -1,12 +1,148 @@
-<html>
+<!doctype html>
+<html lang="de">
   <head>
-    <title>
-      Test
-    </title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#101827">
+    <meta name="description" content="Willkommen auf meiner kleinen Website im Internet.">
+    <title>Willkommen — Meine Website</title>
     <style>
+      :root {
+        color-scheme: dark;
+        --background: #101827;
+        --surface: rgba(255, 255, 255, 0.06);
+        --text: #f4f7fb;
+        --muted: #b7c1d1;
+        --accent: #9ef0d0;
+        --accent-dark: #143b36;
+      }
+
+      * { box-sizing: border-box; }
+      html { scroll-behavior: smooth; }
+      body {
+        min-height: 100vh;
+        margin: 0;
+        color: var(--text);
+        background:
+          radial-gradient(ellipse at 75% 15%, rgba(87, 130, 190, 0.2), transparent 38rem),
+          radial-gradient(ellipse at 10% 85%, rgba(75, 171, 142, 0.12), transparent 34rem),
+          var(--background);
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        line-height: 1.6;
+      }
+
+      a { color: inherit; }
+      .page { width: min(1080px, calc(100% - 2.5rem)); margin: 0 auto; }
+      header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 1.5rem 0;
+      }
+      .brand { font-weight: 750; letter-spacing: 0.02em; text-decoration: none; }
+      nav { display: flex; gap: 1.5rem; }
+      nav a { color: var(--muted); font-size: 0.95rem; text-decoration: none; }
+      nav a:hover, nav a:focus-visible { color: var(--accent); }
+
+      main { padding: clamp(4rem, 11vw, 8.5rem) 0 5rem; }
+      .eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.55rem;
+        color: var(--accent);
+        font-size: 0.82rem;
+        font-weight: 700;
+        letter-spacing: 0.13em;
+        text-transform: uppercase;
+      }
+      .eyebrow::before { width: 1.5rem; height: 1px; background: currentColor; content: ""; }
+      h1 {
+        max-width: 780px;
+        margin: 1.25rem 0;
+        font-size: clamp(3rem, 9vw, 6.5rem);
+        letter-spacing: -0.07em;
+        line-height: 0.98;
+      }
+      h1 span { color: var(--accent); }
+      .intro { max-width: 590px; margin: 1.5rem 0 2rem; color: var(--muted); font-size: clamp(1.05rem, 2vw, 1.25rem); }
+      .actions { display: flex; flex-wrap: wrap; gap: 0.85rem; }
+      .button {
+        display: inline-flex;
+        min-height: 3rem;
+        align-items: center;
+        justify-content: center;
+        padding: 0.7rem 1.15rem;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 999px;
+        font-weight: 700;
+        text-decoration: none;
+        transition: transform 160ms ease, background 160ms ease;
+      }
+      .button:hover { transform: translateY(-2px); }
+      .button-primary { border-color: var(--accent); color: #10211d; background: var(--accent); }
+      .button-secondary:hover { background: var(--surface); }
+
+      .about {
+        display: grid;
+        grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+        gap: 2rem;
+        align-items: start;
+        margin-top: clamp(5rem, 12vw, 9rem);
+        padding: 2rem;
+        border: 1px solid rgba(255, 255, 255, 0.11);
+        border-radius: 1.5rem;
+        background: var(--surface);
+        backdrop-filter: blur(12px);
+      }
+      h2 { margin: 0; font-size: clamp(1.6rem, 4vw, 2.4rem); letter-spacing: -0.04em; }
+      .about p { margin: 0; color: var(--muted); }
+      footer { padding: 1.5rem 0 2rem; border-top: 1px solid rgba(255, 255, 255, 0.1); color: var(--muted); font-size: 0.9rem; }
+      :focus-visible { outline: 3px solid var(--accent); outline-offset: 4px; }
+
+      @media (max-width: 620px) {
+        header { align-items: flex-start; gap: 1rem; }
+        nav { gap: 0.9rem; }
+        nav a { font-size: 0.85rem; }
+        .about { grid-template-columns: 1fr; padding: 1.5rem; }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after { scroll-behavior: auto !important; transition-duration: 0.01ms !important; }
+      }
     </style>
   </head>
   <body>
-    hi das ist ein Test
+    <div class="page">
+      <header>
+        <a class="brand" href="#start" aria-label="Zur Startseite">Meine Website</a>
+        <nav aria-label="Hauptnavigation">
+          <a href="#start">Start</a>
+          <a href="#ueber">Über</a>
+        </nav>
+      </header>
+
+      <main id="start">
+        <section aria-labelledby="welcome-title">
+          <p class="eyebrow">Schön, dass du da bist</p>
+          <h1 id="welcome-title">Willkommen auf meiner <span>Seite.</span></h1>
+          <p class="intro">Das hier ist meine kleine Ecke im Internet – ein guter Ort, um Ideen zu sammeln und Neues auszuprobieren.</p>
+          <div class="actions">
+            <a class="button button-primary" href="#ueber">Schau dich um <span aria-hidden="true">↘</span></a>
+            <a class="button button-secondary" href="#ueber">Mehr erfahren</a>
+          </div>
+        </section>
+
+        <section class="about" id="ueber" aria-labelledby="about-title">
+          <h2 id="about-title">Ein Anfang.</h2>
+          <p>Diese Website wächst Schritt für Schritt. Hier kannst du bald mehr über mich, meine Projekte oder alles finden, was ich mit dir teilen möchte. Bis dahin: Willkommen und viel Spaß beim Umschauen!</p>
+        </section>
+      </main>
+
+      <footer>
+        <p>Mit Neugier gemacht · <span id="year">2026</span></p>
+      </footer>
+    </div>
+    <script>
+      document.getElementById("year").textContent = new Date().getFullYear();
+    </script>
   </body>
 </html>
