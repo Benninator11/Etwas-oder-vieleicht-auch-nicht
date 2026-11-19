@@ -96,6 +96,40 @@
       }
       h2 { margin: 0; font-size: clamp(1.6rem, 4vw, 2.4rem); letter-spacing: -0.04em; }
       .about p { margin: 0; color: var(--muted); }
+      .game {
+        margin-top: 2rem;
+        padding: 2rem;
+        border: 1px solid rgba(255, 255, 255, 0.11);
+        border-radius: 1.5rem;
+        background: var(--surface);
+      }
+      .game h2 { margin-bottom: 0.5rem; }
+      .game p { color: var(--muted); }
+      .game-form { display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: center; }
+      .game-form label { width: 100%; color: var(--muted); }
+      .game-form input {
+        width: 6rem;
+        min-height: 3rem;
+        padding: 0.5rem 0.75rem;
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        border-radius: 0.75rem;
+        color: var(--text);
+        background: rgba(0, 0, 0, 0.2);
+        font: inherit;
+      }
+      .game-form button {
+        min-height: 3rem;
+        padding: 0.65rem 1rem;
+        border: 1px solid var(--accent);
+        border-radius: 999px;
+        color: #10211d;
+        background: var(--accent);
+        font: inherit;
+        font-weight: 700;
+        cursor: pointer;
+      }
+      .game-form button:hover { filter: brightness(1.08); }
+      #game-message { min-height: 1.6em; margin-bottom: 0; }
       footer { padding: 1.5rem 0 2rem; border-top: 1px solid rgba(255, 255, 255, 0.1); color: var(--muted); font-size: 0.9rem; }
       :focus-visible { outline: 3px solid var(--accent); outline-offset: 4px; }
 
@@ -104,6 +138,7 @@
         nav { gap: 0.9rem; }
         nav a { font-size: 0.85rem; }
         .about { grid-template-columns: 1fr; padding: 1.5rem; }
+        .game { padding: 1.5rem; }
       }
       @media (prefers-reduced-motion: reduce) {
         *, *::before, *::after { scroll-behavior: auto !important; transition-duration: 0.01ms !important; }
@@ -135,6 +170,18 @@
           <h2 id="about-title">Ein Anfang.</h2>
           <p>Diese Website wächst Schritt für Schritt. Hier kannst du bald mehr über mich, meine Projekte oder alles finden, was ich mit dir teilen möchte. Bis dahin: Willkommen und viel Spaß beim Umschauen!</p>
         </section>
+
+        <section class="game" aria-labelledby="game-title">
+          <h2 id="game-title">Kleines Zahlenratespiel</h2>
+          <p>Ich denke an eine Zahl zwischen 1 und 10. Kannst du sie erraten?</p>
+          <form class="game-form" id="guess-form">
+            <label for="guess">Dein Tipp (1–10)</label>
+            <input id="guess" name="guess" type="number" min="1" max="10" required>
+            <button type="submit">Raten</button>
+            <button type="button" id="new-game">Neues Spiel</button>
+          </form>
+          <p id="game-message" aria-live="polite">Viel Glück!</p>
+        </section>
       </main>
 
       <footer>
@@ -143,6 +190,40 @@
     </div>
     <script>
       document.getElementById("year").textContent = new Date().getFullYear();
+
+      const guessForm = document.getElementById("guess-form");
+      const guessInput = document.getElementById("guess");
+      const gameMessage = document.getElementById("game-message");
+      let secretNumber = Math.floor(Math.random() * 10) + 1;
+      let gameOver = false;
+
+      guessForm.addEventListener("submit", (event) => {
+        event.preventDefault();
+        if (gameOver) return;
+
+        const guess = Number(guessInput.value);
+        if (!Number.isInteger(guess) || guess < 1 || guess > 10) {
+          gameMessage.textContent = "Bitte gib eine Zahl zwischen 1 und 10 ein.";
+          return;
+        }
+
+        if (guess === secretNumber) {
+          gameMessage.textContent = "Richtig geraten! 🎉 Starte ein neues Spiel für die nächste Runde.";
+          gameOver = true;
+        } else if (guess < secretNumber) {
+          gameMessage.textContent = "Zu niedrig – versuch es noch einmal!";
+        } else {
+          gameMessage.textContent = "Zu hoch – versuch es noch einmal!";
+        }
+      });
+
+      document.getElementById("new-game").addEventListener("click", () => {
+        secretNumber = Math.floor(Math.random() * 10) + 1;
+        gameOver = false;
+        guessForm.reset();
+        gameMessage.textContent = "Neues Spiel! Viel Glück!";
+        guessInput.focus();
+      });
     </script>
   </body>
 </html>
