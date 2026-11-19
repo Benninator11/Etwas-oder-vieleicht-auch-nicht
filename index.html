@@ -105,19 +105,29 @@
       }
       .game h2 { margin-bottom: 0.5rem; }
       .game p { color: var(--muted); }
-      .game-form { display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: center; }
-      .game-form label { width: 100%; color: var(--muted); }
-      .game-form input {
-        width: 6rem;
-        min-height: 3rem;
-        padding: 0.5rem 0.75rem;
-        border: 1px solid rgba(255, 255, 255, 0.25);
-        border-radius: 0.75rem;
-        color: var(--text);
+      .game-board {
+        display: grid;
+        width: min(100%, 19rem);
+        grid-template-columns: repeat(3, 1fr);
+        gap: 0.6rem;
+        margin: 1.25rem 0;
+      }
+      .game-cell {
+        display: grid;
+        aspect-ratio: 1;
+        place-items: center;
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        border-radius: 0.9rem;
+        color: var(--accent);
         background: rgba(0, 0, 0, 0.2);
         font: inherit;
+        font-size: clamp(2rem, 10vw, 3.25rem);
+        font-weight: 750;
+        cursor: pointer;
       }
-      .game-form button {
+      .game-cell:hover:enabled { background: rgba(158, 240, 208, 0.12); }
+      .game-cell:disabled { cursor: default; }
+      .game-reset {
         min-height: 3rem;
         padding: 0.65rem 1rem;
         border: 1px solid var(--accent);
@@ -128,8 +138,8 @@
         font-weight: 700;
         cursor: pointer;
       }
-      .game-form button:hover { filter: brightness(1.08); }
-      #game-message { min-height: 1.6em; margin-bottom: 0; }
+      .game-reset:hover { filter: brightness(1.08); }
+      #game-status { min-height: 1.6em; margin-bottom: 1rem; }
       footer { padding: 1.5rem 0 2rem; border-top: 1px solid rgba(255, 255, 255, 0.1); color: var(--muted); font-size: 0.9rem; }
       :focus-visible { outline: 3px solid var(--accent); outline-offset: 4px; }
 
@@ -172,15 +182,21 @@
         </section>
 
         <section class="game" aria-labelledby="game-title">
-          <h2 id="game-title">Kleines Zahlenratespiel</h2>
-          <p>Ich denke an eine Zahl zwischen 1 und 10. Kannst du sie erraten?</p>
-          <form class="game-form" id="guess-form">
-            <label for="guess">Dein Tipp (1–10)</label>
-            <input id="guess" name="guess" type="number" min="1" max="10" required>
-            <button type="submit">Raten</button>
-            <button type="button" id="new-game">Neues Spiel</button>
-          </form>
-          <p id="game-message" aria-live="polite">Viel Glück!</p>
+          <h2 id="game-title">Tic-Tac-Toe</h2>
+          <p>Du spielst <strong>X</strong>, die KI spielt <strong>O</strong>. Wer schafft zuerst drei in einer Reihe?</p>
+          <div class="game-board" id="game-board" role="group" aria-label="Tic-Tac-Toe-Spielbrett">
+            <button class="game-cell" type="button" data-cell="0" aria-label="Feld 1"></button>
+            <button class="game-cell" type="button" data-cell="1" aria-label="Feld 2"></button>
+            <button class="game-cell" type="button" data-cell="2" aria-label="Feld 3"></button>
+            <button class="game-cell" type="button" data-cell="3" aria-label="Feld 4"></button>
+            <button class="game-cell" type="button" data-cell="4" aria-label="Feld 5"></button>
+            <button class="game-cell" type="button" data-cell="5" aria-label="Feld 6"></button>
+            <button class="game-cell" type="button" data-cell="6" aria-label="Feld 7"></button>
+            <button class="game-cell" type="button" data-cell="7" aria-label="Feld 8"></button>
+            <button class="game-cell" type="button" data-cell="8" aria-label="Feld 9"></button>
+          </div>
+          <p id="game-status" aria-live="polite">Du bist dran – wähle ein Feld.</p>
+          <button class="game-reset" id="new-game" type="button">Neues Spiel</button>
         </section>
       </main>
 
@@ -191,38 +207,105 @@
     <script>
       document.getElementById("year").textContent = new Date().getFullYear();
 
-      const guessForm = document.getElementById("guess-form");
-      const guessInput = document.getElementById("guess");
-      const gameMessage = document.getElementById("game-message");
-      let secretNumber = Math.floor(Math.random() * 10) + 1;
+      const boardElement = document.getElementById("game-board");
+      const cells = Array.from(boardElement.querySelectorAll(".game-cell"));
+      const statusElement = document.getElementById("game-status");
+      const winningLines = [
+        [0, 1, 2], [3, 4, 5], [6, 7, 8],
+        [0, 3, 6], [1, 4, 7], [2, 5, 8],
+        [0, 4, 8], [2, 4, 6]
+      ];
+      let board = Array(9).fill("");
       let gameOver = false;
 
-      guessForm.addEventListener("submit", (event) => {
-        event.preventDefault();
-        if (gameOver) return;
-
-        const guess = Number(guessInput.value);
-        if (!Number.isInteger(guess) || guess < 1 || guess > 10) {
-          gameMessage.textContent = "Bitte gib eine Zahl zwischen 1 und 10 ein.";
-          return;
+      function getWinner(position) {
+        for (const [a, b, c] of winningLines) {
+          if (position[a] && position[a] === position[b] && position[a] === position[c]) {
+            return position[a];
+          }
         }
+        return null;
+      }
 
-        if (guess === secretNumber) {
-          gameMessage.textContent = "Richtig geraten! 🎉 Starte ein neues Spiel für die nächste Runde.";
+      function renderBoard() {
+        cells.forEach((cell, index) => {
+          cell.textContent = board[index];
+          cell.setAttribute("aria-label", `Feld ${index + 1}${board[index] ? `: ${board[index]}` : ""}`);
+          cell.disabled = gameOver || board[index] !== "";
+        });
+      }
+
+      function finishIfNeeded() {
+        const winner = getWinner(board);
+        if (winner) {
           gameOver = true;
-        } else if (guess < secretNumber) {
-          gameMessage.textContent = "Zu niedrig – versuch es noch einmal!";
-        } else {
-          gameMessage.textContent = "Zu hoch – versuch es noch einmal!";
+          statusElement.textContent = winner === "X" ? "Du hast gewonnen! 🎉" : "Die KI hat gewonnen. Versuch es noch einmal!";
+          renderBoard();
+          return true;
         }
+        if (board.every(Boolean)) {
+          gameOver = true;
+          statusElement.textContent = "Unentschieden! Gute Runde.";
+          renderBoard();
+          return true;
+        }
+        return false;
+      }
+
+      function findWinningMove(player) {
+        for (let index = 0; index < board.length; index += 1) {
+          if (!board[index]) {
+            board[index] = player;
+            const wins = getWinner(board) === player;
+            board[index] = "";
+            if (wins) return index;
+          }
+        }
+        return null;
+      }
+
+      function chooseAiMove() {
+        // Erst gewinnen, dann den direkten Sieg des Spielers verhindern.
+        const winningMove = findWinningMove("O");
+        if (winningMove !== null) return winningMove;
+        const blockingMove = findWinningMove("X");
+        if (blockingMove !== null) return blockingMove;
+
+        // Danach Mitte, Ecken und schließlich ein beliebiges freies Feld wählen.
+        if (!board[4]) return 4;
+        const corners = [0, 2, 6, 8].filter((index) => !board[index]);
+        const choices = corners.length ? corners : board.map((mark, index) => mark ? null : index).filter((index) => index !== null);
+        return choices[Math.floor(Math.random() * choices.length)];
+      }
+
+      function makeAiMove() {
+        const move = chooseAiMove();
+        if (move === undefined) return;
+        board[move] = "O";
+        renderBoard();
+        if (!finishIfNeeded()) statusElement.textContent = "Du bist dran – wähle ein Feld.";
+      }
+
+      boardElement.addEventListener("click", (event) => {
+        const cell = event.target.closest("[data-cell]");
+        if (!cell || gameOver) return;
+        const index = Number(cell.dataset.cell);
+        if (board[index]) return;
+
+        board[index] = "X";
+        renderBoard();
+        if (finishIfNeeded()) return;
+
+        statusElement.textContent = "Die KI überlegt …";
+        makeAiMove();
       });
 
       document.getElementById("new-game").addEventListener("click", () => {
-        secretNumber = Math.floor(Math.random() * 10) + 1;
+        board = Array(9).fill("");
         gameOver = false;
-        guessForm.reset();
-        gameMessage.textContent = "Neues Spiel! Viel Glück!";
-        guessInput.focus();
+        renderBoard();
+        statusElement.textContent = "Du bist dran – wähle ein Feld.";
+        cells[0].focus();
       });
     </script>
   </body>
