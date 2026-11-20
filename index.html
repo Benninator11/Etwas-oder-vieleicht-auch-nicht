@@ -233,6 +233,137 @@
       opacity: 1;
       pointer-events: auto;
     }
+
+    .mode-selector {
+      display: flex;
+      gap: 0.5rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 2rem;
+      animation: fadeInUp 0.8s ease-out 0.3s both;
+    }
+
+    .mode-btn {
+      padding: 0.625rem 1.25rem;
+      font-size: 0.875rem;
+      font-weight: 600;
+      border: 2px solid var(--text-muted);
+      background: transparent;
+      color: var(--text-muted);
+      border-radius: 2rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-family: inherit;
+    }
+
+    .mode-btn:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    .mode-btn.active {
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      border-color: transparent;
+      color: white;
+      box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
+    }
+
+    .mode-btn:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+
+    .history-panel {
+      margin-top: 2rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      text-align: left;
+      max-height: 200px;
+      overflow-y: auto;
+    }
+
+    .history-panel summary {
+      cursor: pointer;
+      color: var(--text-muted);
+      font-size: 0.875rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      user-select: none;
+    }
+
+    .history-panel summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .history-panel summary::before {
+      content: '▼';
+      font-size: 0.7rem;
+      transition: transform 0.2s;
+    }
+
+    .history-panel[open] summary::before {
+      transform: rotate(180deg);
+    }
+
+    .history-list {
+      list-style: none;
+      margin-top: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .history-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.5rem 0.75rem;
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 0.5rem;
+      font-size: 0.875rem;
+      animation: slideIn 0.3s ease-out;
+    }
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateX(-10px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    .history-item.etwas { border-left: 3px solid var(--accent); }
+    .history-item.nichts { border-left: 3px solid var(--text-muted); }
+    .history-item.ja { border-left: 3px solid #22c55e; }
+    .history-item.nein { border-left: 3px solid #ef4444; }
+    .history-item.wahr { border-left: 3px solid #8b5cf6; }
+    .history-item.falsch { border-left: 3px solid #f97316; }
+
+    .history-emoji { font-size: 1.25rem; }
+    .history-text { flex: 1; font-weight: 500; }
+    .history-time { color: var(--text-muted); font-size: 0.75rem; white-space: nowrap; }
+
+    .clear-history {
+      margin-top: 1rem;
+      padding: 0.5rem 1rem;
+      font-size: 0.75rem;
+      background: transparent;
+      color: var(--text-muted);
+      border: 1px solid var(--text-muted);
+      border-radius: 0.5rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .clear-history:hover {
+      border-color: var(--secondary);
+      color: var(--secondary);
+    }
+
+    @media (max-width: 480px) {
+      .mode-btn { padding: 0.5rem 1rem; font-size: 0.8rem; }
+      .stats { gap: 1rem; }
+      .stat-value { font-size: 1.25rem; }
+    }
   </style>
 </head>
 <body>
@@ -243,8 +374,10 @@
     </header>
 
     <article class="card">
-      <div class="mood-display" id="moodDisplay" role="button" tabindex="0" aria-label="Stimmung ändern">🤔</div>
-      <div class="mood-text" id="moodText">Klicke unten, um es herauszufinden!</div>
+      <div class="mode-selector" id="modeSelector" role="tablist" aria-label="Entscheidungs-Modus wählen"></div>
+      
+      <div class="mood-display" id="moodDisplay" role="button" tabindex="0" aria-label="Entscheidung treffen">🤔</div>
+      <div class="mood-text" id="moodText">Wähle einen Modus und klicke unten!</div>
       
       <div class="btn-group">
         <button class="btn btn-primary" id="decideBtn">
@@ -255,20 +388,26 @@
         </button>
       </div>
 
-      <div class="stats">
+      <div class="stats" id="statsContainer">
         <div class="stat-item">
           <span class="stat-value" id="count">0</span>
           <span>Entscheidungen</span>
         </div>
-        <div class="stat-item">
-          <span class="stat-value" id="etwasCount">0</span>
-          <span>Etwas</span>
+        <div class="stat-item" id="statPositive">
+          <span class="stat-value" id="positiveCount">0</span>
+          <span id="positiveLabel">Etwas</span>
         </div>
-        <div class="stat-item">
-          <span class="stat-value" id="nichtsCount">0</span>
-          <span>Nichts</span>
+        <div class="stat-item" id="statNegative">
+          <span class="stat-value" id="negativeCount">0</span>
+          <span id="negativeLabel">Nichts</span>
         </div>
       </div>
+
+      <details class="history-panel" id="historyPanel">
+        <summary>📜 Verlauf (<span id="historyCount">0</span>)</summary>
+        <ul class="history-list" id="historyList"></ul>
+        <button class="clear-history" id="clearHistory">Verlauf löschen</button>
+      </details>
     </article>
 
     <footer>
@@ -282,11 +421,158 @@
     (function() {
       'use strict';
 
+      // Decision Modes
+      const modes = {
+        'etwas-nichts': {
+          name: 'Etwas / Nichts',
+          icon: '🤔',
+          positive: { label: 'Etwas', key: 'etwasCount', emoji: '✨', color: 'var(--accent)' },
+          negative: { label: 'Nichts', key: 'nichtsCount', emoji: '🤷‍♂️', color: 'var(--text-muted)' },
+          moods: {
+            positive: [
+              { emoji: '✨', text: 'Definitiv ETWAS!', class: 'pulse' },
+              { emoji: '🎉', text: 'JA, absolut ETWAS!', class: 'pulse' },
+              { emoji: '🌟', text: '100% ETWAS!', class: 'pulse' },
+              { emoji: '🚀', text: 'Voll das ETWAS!', class: 'pulse' },
+              { emoji: '💫', text: 'Etwas ganz Großes!', class: 'pulse' }
+            ],
+            negative: [
+              { emoji: '🤷‍♂️', text: 'Eher NICHTS…', class: '' },
+              { emoji: '😴', text: 'Nichts zu sehen hier', class: '' },
+              { emoji: '🕳️', text: 'Leere. Nichts.', class: '' },
+              { emoji: '🌫️', text: 'Nur Nebel…', class: '' },
+              { emoji: '🫥', text: 'Unsichtbares Nichts', class: '' }
+            ]
+          }
+        },
+        'ja-nein': {
+          name: 'Ja / Nein',
+          icon: '❓',
+          positive: { label: 'Ja', key: 'jaCount', emoji: '✅', color: '#22c55e' },
+          negative: { label: 'Nein', key: 'neinCount', emoji: '❌', color: '#ef4444' },
+          moods: {
+            positive: [
+              { emoji: '✅', text: 'JA! Auf jeden Fall!', class: 'pulse' },
+              { emoji: '👍', text: 'Definitiv JA!', class: 'pulse' },
+              { emoji: '🎯', text: '100% JA!', class: 'pulse' },
+              { emoji: '🙌', text: 'Klares JA!', class: 'pulse' },
+              { emoji: '💚', text: 'Absolut JA!', class: 'pulse' }
+            ],
+            negative: [
+              { emoji: '❌', text: 'Eher NEIN…', class: '' },
+              { emoji: '🙅‍♂️', text: 'Nein, definitiv nicht', class: '' },
+              { emoji: '🚫', text: 'Absolutes NEIN', class: '' },
+              { emoji: '👎', text: 'Nö.', class: '' },
+              { emoji: '🛑', text: 'Nicht mal im Traum', class: '' }
+            ]
+          }
+        },
+        'wahr-falsch': {
+          name: 'Wahr / Falsch',
+          icon: '🧠',
+          positive: { label: 'Wahr', key: 'wahrCount', emoji: '✓', color: '#8b5cf6' },
+          negative: { label: 'Falsch', key: 'falschCount', emoji: '✗', color: '#f97316' },
+          moods: {
+            positive: [
+              { emoji: '✓', text: 'WAHR!', class: 'pulse' },
+              { emoji: '🎓', text: 'Absolut WAHR', class: 'pulse' },
+              { emoji: '📜', text: 'Bewiesen: WAHR', class: 'pulse' },
+              { emoji: '🔬', text: 'Wissenschaftlich WAHR', class: 'pulse' },
+              { emoji: '💎', text: 'Unbestreitbar WAHR', class: 'pulse' }
+            ],
+            negative: [
+              { emoji: '✗', text: 'FALSCH!', class: '' },
+              { emoji: '🤥', text: 'Das ist FALSCH', class: '' },
+              { emoji: '🚨', text: 'Fake News - FALSCH', class: '' },
+              { emoji: '🗑️', text: 'Müll. FALSCH.', class: '' },
+              { emoji: '🙃', text: 'Ganz sicher FALSCH', class: '' }
+            ]
+          }
+        },
+        'pizza-keine': {
+          name: 'Pizza / Keine Pizza',
+          icon: '🍕',
+          positive: { label: 'Pizza', key: 'pizzaCount', emoji: '🍕', color: '#f97316' },
+          negative: { label: 'Keine Pizza', key: 'keinePizzaCount', emoji: '🥗', color: '#22c55e' },
+          moods: {
+            positive: [
+              { emoji: '🍕', text: 'PIZZA! Immer PIZZA!', class: 'pulse' },
+              { emoji: '🍕', text: 'JA zur Pizza!', class: 'pulse' },
+              { emoji: '🍕', text: 'Pizza ist die Antwort', class: 'pulse' },
+              { emoji: '🍕', text: 'Extra Käse, bitte!', class: 'pulse' },
+              { emoji: '🍕', text: 'Pizza > Alles', class: 'pulse' }
+            ],
+            negative: [
+              { emoji: '🥗', text: 'Heute Salat…', class: '' },
+              { emoji: '🚫🍕', text: 'Keine Pizza für dich', class: '' },
+              { emoji: '🥦', text: 'Brokkoli statt Pizza', class: '' },
+              { emoji: '😢', text: 'Traurig ohne Pizza', class: '' },
+              { emoji: '🍎', text: 'Apfel. Ernsthaft?', class: '' }
+            ]
+          }
+        },
+        'kaffee-tee': {
+          name: 'Kaffee / Tee',
+          icon: '☕',
+          positive: { label: 'Kaffee', key: 'kaffeeCount', emoji: '☕', color: '#78350f' },
+          negative: { label: 'Tee', key: 'teeCount', emoji: '🍵', color: '#166534' },
+          moods: {
+            positive: [
+              { emoji: '☕', text: 'KAFFEE! Jetzt!', class: 'pulse' },
+              { emoji: '☕', text: 'Leben = Kaffee', class: 'pulse' },
+              { emoji: '☕', text: 'Doppelter Espresso', class: 'pulse' },
+              { emoji: '☕', text: 'But first, coffee', class: 'pulse' },
+              { emoji: '☕', text: 'Koffein fließt', class: 'pulse' }
+            ],
+            negative: [
+              { emoji: '🍵', text: 'Tee Zeit 🍃', class: '' },
+              { emoji: '🍵', text: 'Grüner Tee, bitte', class: '' },
+              { emoji: '🍵', text: 'Kamille für die Nerven', class: '' },
+              { emoji: '🍵', text: 'Tee > Kaffee', class: '' },
+              { emoji: '🍵', text: 'Entspannt trinken', class: '' }
+            ]
+          }
+        },
+        'aktion-pause': {
+          name: 'Aktion / Pause',
+          icon: '⚡',
+          positive: { label: 'Aktion', key: 'aktionCount', emoji: '🏃', color: '#dc2626' },
+          negative: { label: 'Pause', key: 'pauseCount', emoji: '😴', color: '#2563eb' },
+          moods: {
+            positive: [
+              { emoji: '🏃', text: 'LOS JETZT!', class: 'pulse' },
+              { emoji: '⚡', text: 'Action Mode ON', class: 'pulse' },
+              { emoji: '💪', text: 'Mach was draus!', class: 'pulse' },
+              { emoji: '🚀', text: 'Volle Kraft voraus!', class: 'pulse' },
+              { emoji: '🔥', text: 'Brenn dafür!', class: 'pulse' }
+            ],
+            negative: [
+              { emoji: '😴', text: 'Chill mal…', class: '' },
+              { emoji: '🛋️', text: 'Couch ruft', class: '' },
+              { emoji: '🧘', text: 'Atmen. Entspannen.', class: '' },
+              { emoji: '😌', text: 'Pause verdient', class: '' },
+              { emoji: '💤', text: 'Nickerchen?', class: '' }
+            ]
+          }
+        }
+      };
+
       // State
       const state = {
+        currentMode: 'etwas-nichts',
         count: 0,
         etwasCount: 0,
         nichtsCount: 0,
+        jaCount: 0,
+        neinCount: 0,
+        wahrCount: 0,
+        falschCount: 0,
+        pizzaCount: 0,
+        keinePizzaCount: 0,
+        kaffeeCount: 0,
+        teeCount: 0,
+        aktionCount: 0,
+        pauseCount: 0,
         history: []
       };
 
@@ -296,32 +582,17 @@
       const decideBtn = document.getElementById('decideBtn');
       const resetBtn = document.getElementById('resetBtn');
       const countEl = document.getElementById('count');
-      const etwasCountEl = document.getElementById('etwasCount');
-      const nichtsCountEl = document.getElementById('nichtsCount');
+      const positiveCountEl = document.getElementById('positiveCount');
+      const negativeCountEl = document.getElementById('negativeCount');
+      const positiveLabelEl = document.getElementById('positiveLabel');
+      const negativeLabelEl = document.getElementById('negativeLabel');
+      const modeSelector = document.getElementById('modeSelector');
+      const historyPanel = document.getElementById('historyPanel');
+      const historyList = document.getElementById('historyList');
+      const historyCountEl = document.getElementById('historyCount');
+      const clearHistoryBtn = document.getElementById('clearHistory');
+      const statsContainer = document.getElementById('statsContainer');
       const easterEgg = document.getElementById('easterEgg');
-
-      // Moods
-      const moods = {
-        etwas: [
-          { emoji: '✨', text: 'Definitiv ETWAS!', class: 'pulse' },
-          { emoji: '🎉', text: 'JA, absolut ETWAS!', class: 'pulse' },
-          { emoji: '🌟', text: '100% ETWAS!', class: 'pulse' },
-          { emoji: '🚀', text: 'Voll das ETWAS!', class: 'pulse' },
-          { emoji: '💫', text: 'Etwas ganz Großes!', class: 'pulse' }
-        ],
-        nichts: [
-          { emoji: '🤷‍♂️', text: 'Eher NICHTS…', class: '' },
-          { emoji: '😴', text: 'Nichts zu sehen hier', class: '' },
-          { emoji: '🕳️', text: 'Leere. Nichts.', class: '' },
-          { emoji: '🌫️', text: 'Nur Nebel…', class: '' },
-          { emoji: '🫥', text: 'Unsichtbares Nichts', class: '' }
-        ],
-        neutral: [
-          { emoji: '🤔', text: 'Hmm, schwer zu sagen…', class: '' },
-          { emoji: '🤨', text: 'Vielleicht? Vielleicht auch nicht.', class: '' },
-          { emoji: '😐', text: 'Entscheide selbst!', class: '' }
-        ]
-      };
 
       // Load state from localStorage
       function loadState() {
@@ -330,10 +601,21 @@
           try {
             const parsed = JSON.parse(saved);
             Object.assign(state, parsed);
+            // Ensure all keys exist
+            Object.keys(modes).forEach(modeKey => {
+              const mode = modes[modeKey];
+              if (!state[mode.positive.key]) state[mode.positive.key] = 0;
+              if (!state[mode.negative.key]) state[mode.negative.key] = 0;
+            });
+            renderModeSelector();
             updateStats();
+            renderHistory();
           } catch (e) {
             console.warn('Could not load state:', e);
+            renderModeSelector();
           }
+        } else {
+          renderModeSelector();
         }
       }
 
@@ -342,32 +624,82 @@
         localStorage.setItem('etwas-oder-nicht', JSON.stringify(state));
       }
 
-      // Update stats display
-      function updateStats() {
-        countEl.textContent = state.count;
-        etwasCountEl.textContent = state.etwasCount;
-        nichtsCountEl.textContent = state.nichtsCount;
+      // Render mode selector buttons
+      function renderModeSelector() {
+        modeSelector.innerHTML = '';
+        Object.entries(modes).forEach(([key, mode]) => {
+          const btn = document.createElement('button');
+          btn.className = 'mode-btn' + (key === state.currentMode ? ' active' : '');
+          btn.setAttribute('role', 'tab');
+          btn.setAttribute('aria-selected', key === state.currentMode);
+          btn.setAttribute('data-mode', key);
+          btn.innerHTML = `${mode.icon} ${mode.name}`;
+          btn.addEventListener('click', () => switchMode(key));
+          modeSelector.appendChild(btn);
+        });
       }
 
-      // Get random mood
+      // Switch mode
+      function switchMode(modeKey) {
+        state.currentMode = modeKey;
+        renderModeSelector();
+        updateStats();
+        resetDisplay();
+        saveState();
+      }
+
+      // Update stats display
+      function updateStats() {
+        const mode = modes[state.currentMode];
+        countEl.textContent = state.count;
+        positiveCountEl.textContent = state[mode.positive.key] || 0;
+        negativeCountEl.textContent = state[mode.negative.key] || 0;
+        positiveLabelEl.textContent = mode.positive.label;
+        negativeLabelEl.textContent = mode.negative.label;
+        historyCountEl.textContent = state.history.length;
+      }
+
+      // Reset display to neutral
+      function resetDisplay() {
+        const mode = modes[state.currentMode];
+        moodDisplay.textContent = mode.icon;
+        moodDisplay.className = 'mood-display';
+        moodText.textContent = `Modus: ${mode.name} — Klicke unten!`;
+        moodText.style.color = '';
+      }
+
+      // Get random mood for current mode
       function getRandomMood(type) {
-        const arr = moods[type] || moods.neutral;
+        const mode = modes[state.currentMode];
+        const arr = mode.moods[type] || [{ emoji: mode.icon, text: 'Hmm…', class: '' }];
         return arr[Math.floor(Math.random() * arr.length)];
       }
 
       // Decide
       function decide() {
-        const isEtwas = Math.random() > 0.5;
-        const type = isEtwas ? 'etwas' : 'nichts';
+        const mode = modes[state.currentMode];
+        const isPositive = Math.random() > 0.5;
+        const type = isPositive ? 'positive' : 'negative';
         const mood = getRandomMood(type);
 
         // Update state
         state.count++;
-        if (isEtwas) state.etwasCount++;
-        else state.nichtsCount++;
-        state.history.push({ type, timestamp: Date.now() });
+        if (isPositive) state[mode.positive.key]++;
+        else state[mode.negative.key]++;
+        
+        const historyEntry = {
+          mode: state.currentMode,
+          type: isPositive ? mode.positive.label.toLowerCase() : mode.negative.label.toLowerCase(),
+          emoji: mood.emoji,
+          text: mood.text,
+          timestamp: Date.now()
+        };
+        state.history.unshift(historyEntry);
+        if (state.history.length > 50) state.history.pop();
+        
         saveState();
         updateStats();
+        renderHistory();
 
         // Animate
         moodDisplay.style.transform = 'scale(0) rotate(180deg)';
@@ -377,7 +709,7 @@
           moodDisplay.textContent = mood.emoji;
           moodDisplay.className = 'mood-display ' + (mood.class || '');
           moodText.textContent = mood.text;
-          moodText.style.color = isEtwas ? 'var(--accent)' : 'var(--text-muted)';
+          moodText.style.color = isPositive ? mode.positive.color : mode.negative.color;
           
           moodDisplay.style.transform = 'scale(1) rotate(0deg)';
           moodText.style.opacity = '1';
@@ -388,22 +720,41 @@
         setTimeout(() => decideBtn.style.transform = '', 100);
       }
 
-      // Reset
+      // Reset current mode stats
       function reset() {
-        state.count = 0;
-        state.etwasCount = 0;
-        state.nichtsCount = 0;
-        state.history = [];
+        const mode = modes[state.currentMode];
+        state[mode.positive.key] = 0;
+        state[mode.negative.key] = 0;
         saveState();
         updateStats();
-
-        moodDisplay.textContent = '🤔';
-        moodDisplay.className = 'mood-display';
-        moodText.textContent = 'Klicke unten, um es herauszufinden!';
-        moodText.style.color = '';
+        resetDisplay();
 
         resetBtn.style.transform = 'scale(0.95)';
         setTimeout(() => resetBtn.style.transform = '', 100);
+      }
+
+      // Render history
+      function renderHistory() {
+        historyList.innerHTML = '';
+        state.history.forEach((entry, index) => {
+          const li = document.createElement('li');
+          li.className = `history-item ${entry.type}`;
+          const time = new Date(entry.timestamp).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
+          li.innerHTML = `
+            <span class="history-emoji">${entry.emoji}</span>
+            <span class="history-text">${entry.text}</span>
+            <span class="history-time">${time}</span>
+          `;
+          historyList.appendChild(li);
+        });
+        historyCountEl.textContent = state.history.length;
+      }
+
+      // Clear history
+      function clearHistory() {
+        state.history = [];
+        saveState();
+        renderHistory();
       }
 
       // Konami code easter egg
@@ -477,6 +828,7 @@
           decide();
         }
       });
+      clearHistoryBtn.addEventListener('click', clearHistory);
       document.addEventListener('keydown', handleKeydown);
 
       // Initialize
