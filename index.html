@@ -3,100 +3,460 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Etwas oder vielleicht auch nicht - Eine interaktive Seite">
-  <title>Etwas oder vielleicht auch nicht? 🤔</title>
+  <meta name="description" content="Entscheidungs-Hilfe: Etwas oder Nichts, Ja/Nein, Pizza/Keine Pizza und 20+ weitere Modi mit Statistiken, Sound, Achievements & mehr">
+  <title>Entscheider Pro — Etwas oder vielleicht auch nicht? 🎲</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
 
     :root {
-      --primary: #6366f1;
-      --primary-dark: #4f46e5;
-      --secondary: #f43f5e;
-      --bg: #0f172a;
-      --bg-card: #1e293b;
-      --text: #f1f5f9;
-      --text-muted: #94a3b8;
-      --accent: #22d3ee;
+      --primary: #6366f1; --primary-dark: #4f46e5; --primary-light: #818cf8;
+      --secondary: #f43f5e; --accent: #22d3ee; --success: #22c55e; --warning: #fbbf24; --info: #3b82f6;
+      --bg: #0a0f1a; --bg-elevated: #111827; --bg-card: #1e293b; --bg-hover: #334155;
+      --text: #f8fafc; --text-muted: #94a3b8; --text-dim: #64748b;
+      --border: rgba(148, 163, 184, 0.15); --border-strong: rgba(148, 163, 184, 0.3);
+      --shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); --shadow-lg: 0 35px 60px -15px rgba(0, 0, 0, 0.6);
+      --radius: 1rem; --radius-sm: 0.5rem; --radius-lg: 1.5rem;
+      --transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1); --transition-slow: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      --font-sans: 'Space Grotesk', system-ui, sans-serif; --font-mono: 'JetBrains Mono', monospace;
     }
 
     @media (prefers-color-scheme: light) {
       :root {
-        --bg: #f8fafc;
-        --bg-card: #ffffff;
-        --text: #0f172a;
-        --text-muted: #64748b;
+        --bg: #f8fafc; --bg-elevated: #ffffff; --bg-card: #ffffff; --bg-hover: #f1f5f9;
+        --text: #0f172a; --text-muted: #64748b; --text-dim: #94a3b8;
+        --border: rgba(15, 23, 42, 0.08); --border-strong: rgba(15, 23, 42, 0.15);
+        --shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.15); --shadow-lg: 0 35px 60px -15px rgba(15, 23, 42, 0.2);
       }
     }
 
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+    }
+
+    html { scroll-behavior: smooth; }
+
     body {
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 2rem;
-      line-height: 1.6;
-      transition: background 0.3s, color 0.3s;
+      font-family: var(--font-sans); background: var(--bg); color: var(--text);
+      min-height: 100vh; display: flex; flex-direction: column; align-items: center;
+      padding: clamp(1rem, 3vh, 2rem) clamp(1rem, 4vw, 2rem); line-height: 1.6;
+      transition: background var(--transition-slow), color var(--transition-slow);
+      overflow-x: hidden;
     }
 
-    .container {
-      max-width: 600px;
-      width: 100%;
-      text-align: center;
-    }
+    .container { max-width: 720px; width: 100%; }
 
-    h1 {
-      font-size: clamp(2rem, 5vw, 3.5rem);
-      font-weight: 800;
-      background: linear-gradient(135deg, var(--primary), var(--accent));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      margin-bottom: 1rem;
-      animation: fadeInUp 0.8s ease-out;
-    }
+    /* Background decoration */
+    .bg-grid { position: fixed; inset: 0; background-image: linear-gradient(rgba(99,102,241,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(99,102,241,0.03) 1px, transparent 1px); background-size: 60px 60px; pointer-events: none; z-index: -1; opacity: 0.5; }
+    .bg-glow { position: fixed; top: -200px; right: -200px; width: 500px; height: 500px; background: radial-gradient(circle, rgba(99,102,241,0.15) 0%, transparent 70%); pointer-events: none; z-index: -1; animation: float 20s ease-in-out infinite; }
+    .bg-glow-2 { position: fixed; bottom: -150px; left: -150px; width: 400px; height: 400px; background: radial-gradient(circle, rgba(34,211,238,0.1) 0%, transparent 70%); pointer-events: none; z-index: -1; animation: float 25s ease-in-out infinite reverse; }
+    @keyframes float { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(30px, 30px); } }
 
-    .subtitle {
-      font-size: 1.25rem;
-      color: var(--text-muted);
-      margin-bottom: 3rem;
-      animation: fadeInUp 0.8s ease-out 0.2s both;
-    }
+    header { text-align: center; margin-bottom: clamp(1.5rem, 4vh, 2.5rem); animation: fadeInUp 0.8s var(--transition-slow); }
+    h1 { font-size: clamp(2rem, 6vw, 3.5rem); font-weight: 700; letter-spacing: -0.02em; background: linear-gradient(135deg, var(--primary), var(--accent), var(--secondary)); -webkit-background-clip: text; background-clip: text; color: transparent; margin-bottom: 0.75rem; line-height: 1.1; }
+    .subtitle { font-size: clamp(1rem, 2.5vw, 1.25rem); color: var(--text-muted); font-weight: 400; max-width: 500px; margin: 0 auto; }
 
-    .card {
-      background: var(--bg-card);
-      border-radius: 1rem;
-      padding: 2.5rem;
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      animation: fadeInUp 0.8s ease-out 0.4s both;
-      position: relative;
-      overflow: hidden;
-    }
+    .card { background: var(--bg-card); border-radius: var(--radius-lg); padding: clamp(1.5rem, 4vw, 2.5rem); box-shadow: var(--shadow); border: 1px solid var(--border); position: relative; overflow: hidden; animation: fadeInUp 0.8s var(--transition-slow) 0.1s both; }
+    .card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, var(--primary), var(--accent), var(--secondary), var(--success), var(--warning)); background-size: 200% 100%; animation: gradientShift 8s linear infinite; }
+    @keyframes gradientShift { 0% { background-position: 0% 50%; } 100% { background-position: 200% 50%; } }
 
-    .card::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 4px;
-      background: linear-gradient(90deg, var(--primary), var(--accent), var(--secondary));
-    }
+    @keyframes fadeInUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes scaleIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+    @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.06); } }
+    @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-6px); } 75% { transform: translateX(6px); } }
+    @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+    @keyframes confettiFall { to { transform: translateY(120vh) rotate(var(--rot)) scale(0); opacity: 0; } }
 
-    .mood-display {
-      font-size: 4rem;
-      margin: 1.5rem 0;
-      transition: transform 0.3s ease;
-      cursor: pointer;
+    .pulse { animation: pulse 2s ease-in-out infinite; }
+    .shake { animation: shake 0.4s ease-in-out; }
+
+    /* Mode Selector */
+    .mode-selector { display: flex; gap: 0.5rem; justify-content: center; flex-wrap: wrap; margin-bottom: 2rem; animation: fadeInUp 0.6s var(--transition-slow) 0.2s both; }
+    .mode-btn { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.625rem 1.125rem; font-size: 0.8125rem; font-weight: 600; border: 1px solid var(--border-strong); background: var(--bg-elevated); color: var(--text-muted); border-radius: 9999px; cursor: pointer; transition: all var(--transition); font-family: var(--font-sans); white-space: nowrap; }
+    .mode-btn:hover { border-color: var(--primary); color: var(--primary); background: rgba(99, 102, 241, 0.08); transform: translateY(-1px); }
+    .mode-btn.active { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); border-color: transparent; color: white; box-shadow: 0 8px 24px rgba(99, 102, 241, 0.35); }
+    .mode-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+    .mode-btn .mode-icon { font-size: 1rem; }
+
+    /* Main Display */
+    .mood-display { font-size: clamp(4rem, 12vw, 6rem); margin: 1.5rem 0; transition: transform 0.3s var(--transition), opacity 0.2s; cursor: pointer; display: inline-block; filter: drop-shadow(0 4px 12px rgba(0,0,0,0.3)); }
+    .mood-display:hover { transform: scale(1.12) rotate(3deg); }
+    .mood-display:active { transform: scale(0.95); }
+    .mood-text { font-size: clamp(1.125rem, 3vw, 1.5rem); font-weight: 600; margin-bottom: 2rem; min-height: 2.75rem; transition: all var(--transition); display: flex; align-items: center; justify-content: center; gap: 0.5rem; flex-wrap: wrap; }
+    .mood-text .streak-badge { font-size: 0.75rem; padding: 0.25rem 0.625rem; background: linear-gradient(135deg, var(--warning), #f97316); color: #1c1917; border-radius: 9999px; font-weight: 700; animation: scaleIn 0.3s var(--transition); }
+
+    /* Buttons */
+    .btn-group { display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap; margin-top: 1rem; margin-bottom: 1.5rem; }
+    .btn { display: inline-flex; align-items: center; gap: 0.625rem; padding: 1rem 2rem; font-size: 1rem; font-weight: 600; border: none; border-radius: var(--radius); cursor: pointer; transition: all var(--transition); font-family: var(--font-sans); position: relative; overflow: hidden; }
+    .btn::before { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, rgba(255,255,255,0.1), transparent); opacity: 0; transition: opacity var(--transition); }
+    .btn:hover::before { opacity: 1; }
+    .btn:active { transform: scale(0.97); }
+    .btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+    .btn-primary { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: white; box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4); }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 12px 32px rgba(99, 102, 241, 0.5); }
+    .btn-secondary { background: var(--bg-elevated); color: var(--text); border: 1px solid var(--border-strong); }
+    .btn-secondary:hover { border-color: var(--accent); color: var(--accent); background: var(--bg-hover); }
+    .btn-ghost { background: transparent; color: var(--text-muted); border: 1px solid transparent; padding: 0.625rem 1rem; font-size: 0.875rem; }
+    .btn-ghost:hover { color: var(--text); background: var(--bg-hover); }
+    .btn-icon { font-size: 1.125em; }
+
+    /* Stats */
+    .stats { display: flex; justify-content: center; gap: clamp(1rem, 3vw, 2rem); margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid var(--border); color: var(--text-muted); font-size: 0.8125rem; flex-wrap: wrap; }
+    .stat-item { display: flex; flex-direction: column; align-items: center; gap: 0.25rem; min-width: 80px; }
+    .stat-value { font-size: clamp(1.5rem, 4vw, 2rem); font-weight: 700; font-family: var(--font-mono); background: linear-gradient(135deg, var(--accent), var(--primary)); -webkit-background-clip: text; background-clip: text; color: transparent; line-height: 1; }
+    .stat-label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; }
+
+    /* Probability Slider */
+    .probability-control { display: flex; align-items: center; gap: 1rem; justify-content: center; flex-wrap: wrap; margin: 1.5rem 0; padding: 1rem; background: var(--bg-elevated); border-radius: var(--radius); border: 1px solid var(--border); animation: fadeInUp 0.6s var(--transition-slow) 0.3s both; }
+    .probability-label { font-size: 0.875rem; font-weight: 600; color: var(--text-muted); white-space: nowrap; }
+    .probability-slider-wrapper { flex: 1; min-width: 200px; max-width: 300px; }
+    .probability-slider { -webkit-appearance: none; appearance: none; width: 100%; height: 6px; border-radius: 3px; background: var(--border-strong); outline: none; cursor: pointer; }
+    .probability-slider::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 20px; height: 20px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--accent)); cursor: pointer; box-shadow: 0 2px 8px rgba(99, 102, 241, 0.4); transition: transform var(--transition), box-shadow var(--transition); }
+    .probability-slider::-webkit-slider-thumb:hover { transform: scale(1.2); box-shadow: 0 4px 16px rgba(99, 102, 241, 0.6); }
+    .probability-slider::-moz-range-thumb { width: 20px; height: 20px; border: none; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--accent)); cursor: pointer; box-shadow: 0 2px 8px rgba(99, 102, 241, 0.4); }
+    .probability-value { font-size: 1rem; font-weight: 700; font-family: var(--font-mono); color: var(--primary); min-width: 50px; text-align: right; }
+
+    /* Toolbar */
+    .toolbar { display: flex; gap: 0.5rem; justify-content: center; flex-wrap: wrap; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border); animation: fadeInUp 0.6s var(--transition-slow) 0.4s both; }
+
+    /* History Panel */
+    .history-panel { margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid var(--border); text-align: left; animation: fadeInUp 0.6s var(--transition-slow) 0.5s both; }
+    .history-panel summary { cursor: pointer; color: var(--text-muted); font-size: 0.8125rem; font-weight: 600; display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; user-select: none; padding: 0.5rem 0; }
+    .history-panel summary::-webkit-details-marker { display: none; }
+    .history-panel summary::after { content: '▼'; font-size: 0.625rem; transition: transform var(--transition); color: var(--text-dim); }
+    .history-panel[open] summary::after { transform: rotate(180deg); }
+    .history-list { list-style: none; display: flex; flex-direction: column; gap: 0.375rem; max-height: 280px; overflow-y: auto; padding-right: 0.25rem; }
+    .history-list::-webkit-scrollbar { width: 6px; }
+    .history-list::-webkit-scrollbar-track { background: transparent; }
+    .history-list::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 3px; }
+    .history-item { display: flex; align-items: center; gap: 0.625rem; padding: 0.5rem 0.75rem; background: var(--bg-elevated); border-radius: var(--radius-sm); font-size: 0.8125rem; animation: slideIn 0.3s var(--transition); border-left: 3px solid transparent; }
+    @keyframes slideIn { from { opacity: 0; transform: translateX(-10px); } to { opacity: 1; transform: translateX(0); } }
+    .history-emoji { font-size: 1.125rem; flex-shrink: 0; }
+    .history-text { flex: 1; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .history-time { color: var(--text-dim); font-size: 0.6875rem; font-family: var(--font-mono); white-space: nowrap; flex-shrink: 0; }
+    .history-mode { font-size: 0.625rem; padding: 0.125rem 0.375rem; background: var(--bg); border-radius: 0.25rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.02em; }
+    .clear-history { margin-top: 1rem; padding: 0.5rem 1rem; font-size: 0.75rem; background: transparent; color: var(--text-muted); border: 1px solid var(--border); border-radius: var(--radius-sm); cursor: pointer; transition: all var(--transition); }
+    .clear-history:hover { border-color: var(--secondary); color: var(--secondary); }
+
+    /* Achievements Panel */
+    .achievements-panel { margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid var(--border); animation: fadeInUp 0.6s var(--transition-slow) 0.6s both; }
+    .achievements-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 0.5rem; margin-top: 0.75rem; }
+    .achievement { display: flex; flex-direction: column; align-items: center; gap: 0.375rem; padding: 0.875rem; background: var(--bg-elevated); border-radius: var(--radius); border: 1px solid var(--border); transition: all var(--transition); position: relative; overflow: hidden; }
+    .achievement.unlocked { border-color: var(--warning); background: linear-gradient(135deg, rgba(251, 191, 36, 0.1), var(--bg-elevated)); }
+    .achievement.unlocked::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--warning), var(--secondary)); }
+    .achievement.locked { opacity: 0.4; filter: grayscale(0.8); }
+    .achievement-icon { font-size: 2rem; line-height: 1; }
+    .achievement-name { font-size: 0.6875rem; font-weight: 600; text-align: center; text-transform: uppercase; letter-spacing: 0.02em; }
+    .achievement-desc { font-size: 0.625rem; color: var(--text-dim); text-align: center; line-height: 1.3; }
+
+    /* Charts */
+    .charts-panel { margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid var(--border); animation: fadeInUp 0.6s var(--transition-slow) 0.7s both; }
+    .charts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1rem; }
+    .chart-container { background: var(--bg-elevated); border-radius: var(--radius); padding: 1rem; border: 1px solid var(--border); }
+    .chart-title { font-size: 0.75rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.75rem; text-align: center; }
+    .chart-canvas { width: 100%; height: 160px; display: block; }
+
+    /* Footer */
+    footer { margin-top: 3rem; color: var(--text-dim); font-size: 0.75rem; text-align: center; animation: fadeInUp 0.8s var(--transition-slow) 0.8s both; }
+    footer a { color: var(--accent); text-decoration: none; font-weight: 600; }
+    footer a:hover { text-decoration: underline; }
+    .shortcuts-hint { display: flex; gap: 1.5rem; justify-content: center; flex-wrap: wrap; margin-top: 1rem; font-size: 0.6875rem; color: var(--text-dim); }
+    .shortcut { display: inline-flex; align-items: center; gap: 0.25rem; background: var(--bg-elevated); padding: 0.25rem 0.5rem; border-radius: 0.25rem; border: 1px solid var(--border); font-family: var(--font-mono); }
+    .shortcut kbd { font-family: var(--font-mono); font-size: 0.625rem; background: var(--bg); padding: 0.125rem 0.375rem; border-radius: 0.125rem; border: 1px solid var(--border); }
+
+    /* Toast */
+    .toast-container { position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%); z-index: 1000; display: flex; flex-direction: column; gap: 0.5rem; pointer-events: none; }
+    .toast { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.75rem 1.25rem; background: var(--bg-card); border: 1px solid var(--border-strong); border-radius: var(--radius); box-shadow: var(--shadow-lg); font-size: 0.8125rem; font-weight: 500; animation: slideUp 0.3s var(--transition); pointer-events: auto; }
+    .toast.success { border-color: var(--success); }
+    .toast.error { border-color: var(--secondary); }
+    .toast.info { border-color: var(--info); }
+    @keyframes slideUp { from { opacity: 0; transform: translateX(-50%) translateY(20px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }
+
+    /* Modal */
+    .modal-overlay { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(4px); z-index: 2000; display: flex; align-items: center; justify-content: center; padding: 1rem; opacity: 0; visibility: hidden; transition: all var(--transition); }
+    .modal-overlay.open { opacity: 1; visibility: visible; }
+    .modal { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 2rem; max-width: 480px; width: 100%; max-height: 85vh; overflow-y: auto; transform: scale(0.95); transition: transform var(--transition); }
+    .modal-overlay.open .modal { transform: scale(1); }
+    .modal-title { font-size: 1.25rem; font-weight: 700; margin-bottom: 1.5rem; text-align: center; }
+    .modal-close { position: absolute; top: 1rem; right: 1rem; width: 32px; height: 32px; border-radius: 50%; background: var(--bg-elevated); border: 1px solid var(--border); color: var(--text-muted); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all var(--transition); font-size: 1.25rem; line-height: 1; }
+    .modal-close:hover { background: var(--bg-hover); color: var(--text); border-color: var(--border-strong); }
+    .modal-section { margin-bottom: 1.5rem; }
+    .modal-label { display: block; font-size: 0.75rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem; }
+    .modal-input, .modal-select, .modal-textarea { width: 100%; padding: 0.75rem 1rem; font-size: 0.875rem; font-family: var(--font-sans); background: var(--bg-elevated); border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--text); transition: all var(--transition); }
+    .modal-input:focus, .modal-select:focus, .modal-textarea:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2); }
+    .modal-textarea { min-height: 100px; resize: vertical; font-family: var(--font-mono); }
+    .modal-btn-group { display: flex; gap: 0.75rem; justify-content: flex-end; margin-top: 1.5rem; }
+    .checkbox-label { display: flex; align-items: center; gap: 0.5rem; cursor: pointer; font-size: 0.875rem; }
+    .checkbox-label input { width: 18px; height: 18px; accent-color: var(--primary); cursor: pointer; }
+
+    /* Easter Egg */
+    .easter-egg { position: fixed; bottom: 1rem; right: 1rem; opacity: 0; pointer-events: none; transition: opacity var(--transition); font-size: 0.6875rem; color: var(--text-dim); background: var(--bg-card); padding: 0.5rem 0.75rem; border-radius: var(--radius-sm); border: 1px solid var(--border); z-index: 100; }
+    .easter-egg.visible { opacity: 1; pointer-events: auto; }
+
+    /* Responsive */
+    @media (max-width: 560px) {
+      .charts-grid { grid-template-columns: 1fr; }
+      .achievements-grid { grid-template-columns: repeat(2, 1fr); }
+      .shortcuts-hint { gap: 0.75rem; }
+      .probability-slider-wrapper { max-width: none; }
     }
+  </style>
+</head>
+<body>
+  <div class="bg-grid" aria-hidden="true"></div>
+  <div class="bg-glow" aria-hidden="true"></div>
+  <div class="bg-glow-2" aria-hidden="true"></div>
+
+  <main class="container">
+    <header>
+      <h1>Entscheider Pro</h1>
+      <p class="subtitle">Dein persönlicher Orakel für alle Lebensfragen — mit Statistiken, Sound, Achievements & mehr 🎲</p>
+    </header>
+
+    <article class="card" id="mainCard">
+      <div class="mode-selector" id="modeSelector" role="tablist" aria-label="Entscheidungs-Modus wählen"></div>
+      
+      <div class="mood-display" id="moodDisplay" role="button" tabindex="0" aria-label="Entscheidung treffen" title="Klicken oder Leertaste für Entscheidung">🤔</div>
+      <div class="mood-text" id="moodText">Wähle einen Modus und drücke <kbd style="font-family:var(--font-mono);font-size:0.8em;background:var(--bg-elevated);padding:0.125rem 0.375rem;border-radius:0.25rem;border:1px solid var(--border)">Leertaste</kbd> oder klicke den Button!</div>
+      
+      <div class="probability-control" id="probabilityControl" style="display:none;">
+        <span class="probability-label">Wahrscheinlichkeit für positives Ergebnis:</span>
+        <div class="probability-slider-wrapper">
+          <input type="range" class="probability-slider" id="probabilitySlider" min="0" max="100" value="50" step="1" aria-label="Wahrscheinlichkeit in Prozent">
+        </div>
+        <span class="probability-value" id="probabilityValue">50%</span>
+      </div>
+
+      <div class="btn-group">
+        <button class="btn btn-primary" id="decideBtn" aria-label="Entscheiden">
+          <span class="btn-icon">🎲</span>
+          <span>Entscheiden</span>
+        </button>
+        <button class="btn btn-secondary" id="resetBtn" aria-label="Aktuellen Modus zurücksetzen">
+          <span class="btn-icon">🔄</span>
+          <span>Reset Modus</span>
+        </button>
+      </div>
+
+      <div class="stats" id="statsContainer">
+        <div class="stat-item">
+          <span class="stat-value" id="count">0</span>
+          <span class="stat-label">Gesamt</span>
+        </div>
+        <div class="stat-item" id="statPositive">
+          <span class="stat-value" id="positiveCount">0</span>
+          <span class="stat-label" id="positiveLabel">Etwas</span>
+        </div>
+        <div class="stat-item" id="statNegative">
+          <span class="stat-value" id="negativeCount">0</span>
+          <span class="stat-label" id="negativeLabel">Nichts</span>
+        </div>
+        <div class="stat-item" id="statStreak">
+          <span class="stat-value" id="streakCount">0</span>
+          <span class="stat-label">Streak 🔥</span>
+        </div>
+      </div>
+
+      <div class="toolbar">
+        <button class="btn btn-ghost" id="exportBtn" aria-label="Daten exportieren" title="Daten exportieren (JSON)">
+          <span class="btn-icon">📤</span> Export
+        </button>
+        <button class="btn btn-ghost" id="importBtn" aria-label="Daten importieren" title="Daten importieren (JSON)">
+          <span class="btn-icon">📥</span> Import
+        </button>
+        <button class="btn btn-ghost" id="soundToggleBtn" aria-label="Sound ein/aus" title="Sound umschalten">
+          <span class="btn-icon" id="soundIcon">🔊</span> Sound
+        </button>
+        <button class="btn btn-ghost" id="settingsBtn" aria-label="Einstellungen" title="Einstellungen">
+          <span class="btn-icon">⚙️</span> Settings
+        </button>
+        <button class="btn btn-ghost" id="fullResetBtn" aria-label="Alles zurücksetzen" title="Alle Daten löschen">
+          <span class="btn-icon">🗑️</span> Full Reset
+        </button>
+      </div>
+
+      <details class="history-panel" id="historyPanel">
+        <summary>📜 Verlauf (<span id="historyCount">0</span>)</summary>
+        <ul class="history-list" id="historyList"></ul>
+        <button class="clear-history" id="clearHistory">Verlauf löschen</button>
+      </details>
+
+      <details class="achievements-panel" id="achievementsPanel" open>
+        <summary>🏆 Achievements (<span id="achievementCount">0</span>/<span id="achievementTotal">0</span>)</summary>
+        <div class="achievements-grid" id="achievementsGrid"></div>
+      </details>
+
+      <details class="charts-panel" id="chartsPanel">
+        <summary>📊 Statistiken & Charts</summary>
+        <div class="charts-grid">
+          <div class="chart-container">
+            <div class="chart-title">Verteilung (aktueller Modus)</div>
+            <canvas class="chart-canvas" id="pieChart" aria-label="Kreisdiagramm der Entscheidungsverteilung"></canvas>
+          </div>
+          <div class="chart-container">
+            <div class="chart-title">Entscheidungen über Zeit</div>
+            <canvas class="chart-canvas" id="lineChart" aria-label="Liniendiagramm der Entscheidungen über Zeit"></canvas>
+          </div>
+        </div>
+      </details>
+    </article>
+
+    <footer>
+      Made with ❤️ & <a href="https://github.com/Benninator11" target="_blank" rel="noopener">GitHub</a> • <a href="#" id="changelogLink">Changelog</a>
+      <div class="shortcuts-hint">
+        <span class="shortcut"><kbd>Space</kbd> Entscheiden</span>
+        <span class="shortcut"><kbd>R</kbd> Reset Modus</span>
+        <span class="shortcut"><kbd>1-9</kbd> Modus wählen</span>
+        <span class="shortcut"><kbd>S</kbd> Sound</span>
+        <span class="shortcut"><kbd>E</kbd> Export</span>
+        <span class="shortcut"><kbd>H</kbd> Verlauf</span>
+        <span class="shortcut"><kbd>?</kbd> Hilfe</span>
+      </div>
+    </footer>
+  </main>
+
+  <div class="toast-container" id="toastContainer" aria-live="polite" aria-atomic="true"></div>
+
+  <div class="easter-egg" id="easterEgg">Konami: ↑↑↓↓←→←→BA • ?: Hilfe</div>
+
+  <!-- Modals -->
+  <div class="modal-overlay" id="importModal" role="dialog" aria-modal="true" aria-labelledby="importModalTitle">
+    <div class="modal">
+      <button class="modal-close" id="importModalClose" aria-label="Schließen">×</button>
+      <h2 class="modal-title" id="importModalTitle">📥 Daten importieren</h2>
+      <div class="modal-section">
+        <label class="modal-label" for="importTextarea">JSON-Daten einfügen:</label>
+        <textarea class="modal-textarea" id="importTextarea" placeholder='{"currentMode":"etwas-nichts","count":42,"etwasCount":23,"nichtsCount":19,"history":[...],"achievements":{...},"settings":{...}}'></textarea>
+      </div>
+      <div class="modal-btn-group">
+        <button class="btn btn-secondary" id="importCancelBtn">Abbrechen</button>
+        <button class="btn btn-primary" id="importConfirmBtn">Importieren</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="exportModal" role="dialog" aria-modal="true" aria-labelledby="exportModalTitle">
+    <div class="modal">
+      <button class="modal-close" id="exportModalClose" aria-label="Schließen">×</button>
+      <h2 class="modal-title" id="exportModalTitle">📤 Daten exportieren</h2>
+      <div class="modal-section">
+        <label class="modal-label" for="exportTextarea">Kopiere die JSON-Daten:</label>
+        <textarea class="modal-textarea" id="exportTextarea" readonly></textarea>
+      </div>
+      <div class="modal-btn-group">
+        <button class="btn btn-secondary" id="exportCopyBtn">
+          <span class="btn-icon">📋</span> Kopieren
+        </button>
+        <button class="btn btn-primary" id="exportDownloadBtn">
+          <span class="btn-icon">💾</span> Herunterladen
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="settingsModal" role="dialog" aria-modal="true" aria-labelledby="settingsModalTitle">
+    <div class="modal">
+      <button class="modal-close" id="settingsModalClose" aria-label="Schließen">×</button>
+      <h2 class="modal-title" id="settingsModalTitle">⚙️ Einstellungen</h2>
+      <div class="modal-section">
+        <label class="checkbox-label">
+          <input type="checkbox" id="settingSound" checked> Sound aktivieren
+        </label>
+      </div>
+      <div class="modal-section">
+        <label class="checkbox-label">
+          <input type="checkbox" id="settingHaptics" checked> Haptisches Feedback (Vibration)
+        </label>
+      </div>
+      <div class="modal-section">
+        <label class="checkbox-label">
+          <input type="checkbox" id="settingAnimations" checked> Animationen
+        </label>
+      </div>
+      <div class="modal-section">
+        <label class="checkbox-label">
+          <input type="checkbox" id="settingConfetti" checked> Confetti bei Erfolgen
+        </label>
+      </div>
+      <div class="modal-section">
+        <label class="checkbox-label">
+          <input type="checkbox" id="settingAutoSave" checked> Auto-Speichern
+        </label>
+      </div>
+      <div class="modal-section">
+        <label class="modal-label" for="settingTheme">Theme:</label>
+        <select class="modal-select" id="settingTheme">
+          <option value="auto">Auto (System)</option>
+          <option value="dark">Dunkel</option>
+          <option value="light">Hell</option>
+        </select>
+      </div>
+      <div class="modal-btn-group">
+        <button class="btn btn-primary" id="settingsCloseBtn">Fertig</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="helpModal" role="dialog" aria-modal="true" aria-labelledby="helpModalTitle">
+    <div class="modal">
+      <button class="modal-close" id="helpModalClose" aria-label="Schließen">×</button>
+      <h2 class="modal-title" id="helpModalTitle">❓ Hilfe & Tastaturkürzel</h2>
+      <div class="modal-section">
+        <h3 style="font-size:0.875rem;font-weight:600;margin-bottom:0.75rem;color:var(--text-muted)">Tastaturkürzel</h3>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:0.5rem;font-size:0.8125rem;">
+          <div><kbd style="font-family:var(--font-mono);background:var(--bg-elevated);padding:0.125rem 0.375rem;border-radius:0.25rem;border:1px solid var(--border)">Space</kbd> / <kbd style="font-family:var(--font-mono);background:var(--bg-elevated);padding:0.125rem 0.375rem;border-radius:0.25rem;border:1px solid var(--border)">Enter</kbd> — Entscheiden</div>
+          <div><kbd style="font-family:var(--font-mono);background:var(--bg-elevated);padding:0.125rem 0.375rem;border-radius:0.25rem;border:1px solid var(--border)">R</kbd> — Modus zurücksetzen</div>
+          <div><kbd style="font-family:var(--font-mono);background:var(--bg-elevated);padding:0.125rem 0.375rem;border-radius:0.25rem;border:1px solid var(--border)">1–9</kbd> — Modus 1–9 wählen</div>
+          <div><kbd style="font-family:var(--font-mono);background:var(--bg-elevated);padding:0.125rem 0.375rem;border-radius:0.25rem;border:1px solid var(--border)">S</kbd> — Sound umschalten</div>
+          <div><kbd style="font-family:var(--font-mono);background:var(--bg-elevated);padding:0.125rem 0.375rem;border-radius:0.25rem;border:1px solid var(--border)">E</kbd> — Exportieren</div>
+          <div><kbd style="font-family:var(--font-mono);background:var(--bg-elevated);padding:0.125rem 0.375rem;border-radius:0.25rem;border:1px solid var(--border)">I</kbd> — Importieren</div>
+          <div><kbd style="font-family:var(--font-mono);background:var(--bg-elevated);padding:0.125rem 0.375rem;border-radius:0.25rem;border:1px solid var(--border)">H</kbd> — Verlauf auf/zu</div>
+          <div><kbd style="font-family:var(--font-mono);background:var(--bg-elevated);padding:0.125rem 0.375rem;border-radius:0.25rem;border:1px solid var(--border)">A</kbd> — Achievements auf/zu</div>
+          <div><kbd style="font-family:var(--font-mono);background:var(--bg-elevated);padding:0.125rem 0.375rem;border-radius:0.25rem;border:1px solid var(--border)">C</kbd> — Charts auf/zu</div>
+          <div><kbd style="font-family:var(--font-mono);background:var(--bg-elevated);padding:0.125rem 0.375rem;border-radius:0.25rem;border:1px solid var(--border)">?</kbd> / <kbd style="font-family:var(--font-mono);background:var(--bg-elevated);padding:0.125rem 0.375rem;border-radius:0.25rem;border:1px solid var(--border)">F1</kbd> — Diese Hilfe</div>
+          <div><kbd style="font-family:var(--font-mono);background:var(--bg-elevated);padding:0.125rem 0.375rem;border-radius:0.25rem;border:1px solid var(--border)">Escape</kbd> — Modals schließen</div>
+        </div>
+      </div>
+      <div class="modal-section">
+        <h3 style="font-size:0.875rem;font-weight:600;margin-bottom:0.75rem;color:var(--text-muted)">Features</h3>
+        <ul style="font-size:0.8125rem;line-height:1.8;color:var(--text-muted);padding-left:1.25rem;">
+          <li>20+ Entscheidungs-Modi mit eigener Persönlichkeit</li>
+          <li>Gewichtete Wahrscheinlichkeit (Slider)</li>
+          <li>Sound-Effekte (Web Audio API, keine Dateien nötig)</li>
+          <li>Streak-Tracking für gleiche Ergebnisse</li>
+          <li>Achievements zum Freischalten</li>
+          <li>Charts (Pie + Timeline)</li>
+          <li>Export/Import als JSON (Backup & Sync)</li>
+          <li>Vollständige Tastaturbedienung</li>
+          <li>Dark/Light/Auto Theme</li>
+          <li>Daten bleiben lokal (localStorage)</li>
+          <li>Konami-Code Easter Egg 🦄</li>
+        </ul>
+      </div>
+      <div class="modal-btn-group">
+        <button class="btn btn-primary" id="helpCloseBtn">Verstanden</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="changelogModal" role="dialog" aria-modal="true" aria-labelledby="changelogModalTitle">
+    <div class="modal">
+      <button class="modal-close" id="changelogModalClose" aria-label="Schließen">×</button>
+      <h2 class="modal-title" id="changelogModalTitle">📝 Changelog</h2>
+      <div class="modal-section" style="max-height:400px;overflow-y:auto;font-size:0.8125rem;line-height:1.7;">
+        <div style="margin-bottom:1.5rem;"><strong style="color:var(--primary)">v3.0</strong> <span style="color:var(--text-muted)">— 2026-11-20</span><ul style="padding-left:1.25rem;margin-top:0.5rem;color:var(--text-muted)"><li>20+ Modi (neu: Links/Rechts, Rot/Blau, Hund/Katze, Marvel/DC, Sweet/Salty, Strand/Berge, Kochen/Bestellen, Zug/Auto, OS-Wars, Editor-Wars, Indie/AAA, Buch/Film, Morgen/Abend, Geld/Sparen, Früh/Nacht)</li><li>Wahrscheinlichkeits-Slider für gewichtete Entscheidungen</li><li>Web Audio Sound Engine (Click, Success, Fail, Achieve, Confetti)</li><li>Streak-Counter & Streak-Achievements</li><li>15 Achievements zum Freischalten</li><li>Charts: Pie (Verteilung) + Line (Timeline)</li><li>Export/Import JSON (Backup, Sync zwischen Geräten)</li><li>Settings Modal: Sound, Haptics, Animations, Confetti, Theme</li><li>Full Keyboard Navigation (1-9, Space, R, S, E, I, H, A, C, ?)</li><li>Toast Notifications für Feedback</li><li>Modern UI: Space Grotesk Font, Grid-BG, Glow-Effekte</li></ul></div>
+        <div style="margin-bottom:1.5rem;"><strong style="color:var(--primary)">v2.0</strong> <span style="color:var(--text-muted)">— 6 Modi, History, Stats, Konami Egg</span></div>
+        <div><strong style="color:var(--primary)">v1.0</strong> <span style="color:var(--text-muted)">— Einfaches Etwas/Nichts</span></div>
+      </div>
+      <div class="modal-btn-group">
+        <button class="btn btn-primary" id="changelogCloseBtn">Schließen</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
 
     .mood-display:hover {
       transform: scale(1.1) rotate(5deg);
