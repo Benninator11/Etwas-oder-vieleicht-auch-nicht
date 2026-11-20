@@ -1,10 +1,487 @@
-<html>
-  <head>
-    <title>
-      Etwas oder vieleicht auch nicht ?!?!?!
-    </title>
-  </head>
-  <body>
-    suiiiiiiiiiiii
-  </body>
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Etwas oder vielleicht auch nicht - Eine interaktive Seite">
+  <title>Etwas oder vielleicht auch nicht? 🤔</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --primary: #6366f1;
+      --primary-dark: #4f46e5;
+      --secondary: #f43f5e;
+      --bg: #0f172a;
+      --bg-card: #1e293b;
+      --text: #f1f5f9;
+      --text-muted: #94a3b8;
+      --accent: #22d3ee;
+    }
+
+    @media (prefers-color-scheme: light) {
+      :root {
+        --bg: #f8fafc;
+        --bg-card: #ffffff;
+        --text: #0f172a;
+        --text-muted: #64748b;
+      }
+    }
+
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+      line-height: 1.6;
+      transition: background 0.3s, color 0.3s;
+    }
+
+    .container {
+      max-width: 600px;
+      width: 100%;
+      text-align: center;
+    }
+
+    h1 {
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 1rem;
+      animation: fadeInUp 0.8s ease-out;
+    }
+
+    .subtitle {
+      font-size: 1.25rem;
+      color: var(--text-muted);
+      margin-bottom: 3rem;
+      animation: fadeInUp 0.8s ease-out 0.2s both;
+    }
+
+    .card {
+      background: var(--bg-card);
+      border-radius: 1rem;
+      padding: 2.5rem;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      animation: fadeInUp 0.8s ease-out 0.4s both;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--primary), var(--accent), var(--secondary));
+    }
+
+    .mood-display {
+      font-size: 4rem;
+      margin: 1.5rem 0;
+      transition: transform 0.3s ease;
+      cursor: pointer;
+    }
+
+    .mood-display:hover {
+      transform: scale(1.1) rotate(5deg);
+    }
+
+    .mood-text {
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin-bottom: 2rem;
+      min-height: 2.5rem;
+      transition: all 0.3s ease;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 1rem 2rem;
+      font-size: 1.1rem;
+      font-weight: 600;
+      border: none;
+      border-radius: 0.75rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-family: inherit;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: white;
+      box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(99, 102, 241, 0.5);
+    }
+
+    .btn-primary:active {
+      transform: translateY(0);
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: var(--text);
+      border: 2px solid var(--text-muted);
+    }
+
+    .btn-secondary:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: 1.5rem;
+    }
+
+    .stats {
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+      margin-top: 2rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    .stat-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.25rem;
+    }
+
+    .stat-value {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--accent);
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+
+    .pulse {
+      animation: pulse 2s infinite;
+    }
+
+    footer {
+      margin-top: 3rem;
+      color: var(--text-muted);
+      font-size: 0.875rem;
+      animation: fadeInUp 0.8s ease-out 0.6s both;
+    }
+
+    footer a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    footer a:hover {
+      text-decoration: underline;
+    }
+
+    .easter-egg {
+      position: fixed;
+      bottom: 1rem;
+      right: 1rem;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .easter-egg.visible {
+      opacity: 1;
+      pointer-events: auto;
+    }
+  </style>
+</head>
+<body>
+  <main class="container">
+    <header>
+      <h1>Etwas oder vielleicht auch nicht?</h1>
+      <p class="subtitle">Die wichtigste Frage des Universums… oder auch nicht 🤷‍♂️</p>
+    </header>
+
+    <article class="card">
+      <div class="mood-display" id="moodDisplay" role="button" tabindex="0" aria-label="Stimmung ändern">🤔</div>
+      <div class="mood-text" id="moodText">Klicke unten, um es herauszufinden!</div>
+      
+      <div class="btn-group">
+        <button class="btn btn-primary" id="decideBtn">
+          <span>🎲 Entscheiden</span>
+        </button>
+        <button class="btn btn-secondary" id="resetBtn">
+          <span>🔄 Zurücksetzen</span>
+        </button>
+      </div>
+
+      <div class="stats">
+        <div class="stat-item">
+          <span class="stat-value" id="count">0</span>
+          <span>Entscheidungen</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-value" id="etwasCount">0</span>
+          <span>Etwas</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-value" id="nichtsCount">0</span>
+          <span>Nichts</span>
+        </div>
+      </div>
+    </article>
+
+    <footer>
+      Made with ❤️ & <a href="https://github.com/Benninator11" target="_blank" rel="noopener">GitHub</a>
+    </footer>
+  </main>
+
+  <div class="easter-egg" id="easterEgg">Konami-Code für Überraschung… ↑↑↓↓←→←→BA</div>
+
+  <script>
+    (function() {
+      'use strict';
+
+      // State
+      const state = {
+        count: 0,
+        etwasCount: 0,
+        nichtsCount: 0,
+        history: []
+      };
+
+      // DOM Elements
+      const moodDisplay = document.getElementById('moodDisplay');
+      const moodText = document.getElementById('moodText');
+      const decideBtn = document.getElementById('decideBtn');
+      const resetBtn = document.getElementById('resetBtn');
+      const countEl = document.getElementById('count');
+      const etwasCountEl = document.getElementById('etwasCount');
+      const nichtsCountEl = document.getElementById('nichtsCount');
+      const easterEgg = document.getElementById('easterEgg');
+
+      // Moods
+      const moods = {
+        etwas: [
+          { emoji: '✨', text: 'Definitiv ETWAS!', class: 'pulse' },
+          { emoji: '🎉', text: 'JA, absolut ETWAS!', class: 'pulse' },
+          { emoji: '🌟', text: '100% ETWAS!', class: 'pulse' },
+          { emoji: '🚀', text: 'Voll das ETWAS!', class: 'pulse' },
+          { emoji: '💫', text: 'Etwas ganz Großes!', class: 'pulse' }
+        ],
+        nichts: [
+          { emoji: '🤷‍♂️', text: 'Eher NICHTS…', class: '' },
+          { emoji: '😴', text: 'Nichts zu sehen hier', class: '' },
+          { emoji: '🕳️', text: 'Leere. Nichts.', class: '' },
+          { emoji: '🌫️', text: 'Nur Nebel…', class: '' },
+          { emoji: '🫥', text: 'Unsichtbares Nichts', class: '' }
+        ],
+        neutral: [
+          { emoji: '🤔', text: 'Hmm, schwer zu sagen…', class: '' },
+          { emoji: '🤨', text: 'Vielleicht? Vielleicht auch nicht.', class: '' },
+          { emoji: '😐', text: 'Entscheide selbst!', class: '' }
+        ]
+      };
+
+      // Load state from localStorage
+      function loadState() {
+        const saved = localStorage.getItem('etwas-oder-nicht');
+        if (saved) {
+          try {
+            const parsed = JSON.parse(saved);
+            Object.assign(state, parsed);
+            updateStats();
+          } catch (e) {
+            console.warn('Could not load state:', e);
+          }
+        }
+      }
+
+      // Save state to localStorage
+      function saveState() {
+        localStorage.setItem('etwas-oder-nicht', JSON.stringify(state));
+      }
+
+      // Update stats display
+      function updateStats() {
+        countEl.textContent = state.count;
+        etwasCountEl.textContent = state.etwasCount;
+        nichtsCountEl.textContent = state.nichtsCount;
+      }
+
+      // Get random mood
+      function getRandomMood(type) {
+        const arr = moods[type] || moods.neutral;
+        return arr[Math.floor(Math.random() * arr.length)];
+      }
+
+      // Decide
+      function decide() {
+        const isEtwas = Math.random() > 0.5;
+        const type = isEtwas ? 'etwas' : 'nichts';
+        const mood = getRandomMood(type);
+
+        // Update state
+        state.count++;
+        if (isEtwas) state.etwasCount++;
+        else state.nichtsCount++;
+        state.history.push({ type, timestamp: Date.now() });
+        saveState();
+        updateStats();
+
+        // Animate
+        moodDisplay.style.transform = 'scale(0) rotate(180deg)';
+        moodText.style.opacity = '0';
+
+        setTimeout(() => {
+          moodDisplay.textContent = mood.emoji;
+          moodDisplay.className = 'mood-display ' + (mood.class || '');
+          moodText.textContent = mood.text;
+          moodText.style.color = isEtwas ? 'var(--accent)' : 'var(--text-muted)';
+          
+          moodDisplay.style.transform = 'scale(1) rotate(0deg)';
+          moodText.style.opacity = '1';
+        }, 150);
+
+        // Button feedback
+        decideBtn.style.transform = 'scale(0.95)';
+        setTimeout(() => decideBtn.style.transform = '', 100);
+      }
+
+      // Reset
+      function reset() {
+        state.count = 0;
+        state.etwasCount = 0;
+        state.nichtsCount = 0;
+        state.history = [];
+        saveState();
+        updateStats();
+
+        moodDisplay.textContent = '🤔';
+        moodDisplay.className = 'mood-display';
+        moodText.textContent = 'Klicke unten, um es herauszufinden!';
+        moodText.style.color = '';
+
+        resetBtn.style.transform = 'scale(0.95)';
+        setTimeout(() => resetBtn.style.transform = '', 100);
+      }
+
+      // Konami code easter egg
+      let konamiIndex = 0;
+      const konamiCode = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'KeyB', 'KeyA'];
+
+      function handleKeydown(e) {
+        if (e.code === konamiCode[konamiIndex]) {
+          konamiIndex++;
+          if (konamiIndex === konamiCode.length) {
+            activateEasterEgg();
+            konamiIndex = 0;
+          }
+        } else {
+          konamiIndex = 0;
+        }
+      }
+
+      function activateEasterEgg() {
+        easterEgg.classList.add('visible');
+        moodDisplay.textContent = '🦄';
+        moodText.textContent = 'DU HAST DEN GEHEIMEN MODUS GEFUNDEN! 🌈✨';
+        moodText.style.color = 'var(--secondary)';
+        moodDisplay.className = 'mood-display pulse';
+        
+        // Confetti effect
+        for (let i = 0; i < 30; i++) {
+          createConfetti();
+        }
+
+        setTimeout(() => easterEgg.classList.remove('visible'), 5000);
+      }
+
+      function createConfetti() {
+        const confetti = document.createElement('div');
+        confetti.style.cssText = `
+          position: fixed;
+          width: 10px;
+          height: 10px;
+          background: ${['var(--primary)', 'var(--accent)', 'var(--secondary)', '#fbbf24', '#34d399'][Math.floor(Math.random() * 5)]};
+          left: ${Math.random() * 100}vw;
+          top: -10px;
+          border-radius: ${Math.random() > 0.5 ? '50%' : '0'};
+          pointer-events: none;
+          z-index: 1000;
+          animation: fall ${2 + Math.random() * 2}s linear forwards;
+        `;
+        document.body.appendChild(confetti);
+        setTimeout(() => confetti.remove(), 4000);
+      }
+
+      // Add confetti animation
+      const style = document.createElement('style');
+      style.textContent = `
+        @keyframes fall {
+          to {
+            transform: translateY(110vh) rotate(${Math.random() * 720}deg);
+            opacity: 0;
+          }
+        }
+      `;
+      document.head.appendChild(style);
+
+      // Event listeners
+      decideBtn.addEventListener('click', decide);
+      resetBtn.addEventListener('click', reset);
+      moodDisplay.addEventListener('click', decide);
+      moodDisplay.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          decide();
+        }
+      });
+      document.addEventListener('keydown', handleKeydown);
+
+      // Initialize
+      loadState();
+    })();
+  </script>
+</body>
 </html>
